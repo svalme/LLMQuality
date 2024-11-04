@@ -2,16 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!---<script src="{{ url_for('static', filename='script_survey.js') }}"></script>-->
     <title>Question & Answer</title>
 </head>
 <body>
     <h2>Question</h2>
     <p>{{ qa.question }}</p>
     <h2>Answer</h2>
-    <p>{{ qa.answer }}</p>
+    <p id="answer" style="visibility: hidden;">{{ qa.answer }}</p>
     
     <form action="{{ url_for('next_question') }}" method="get">
         <button type="submit">Next</button>
     </form>
+
+    <script src="{{ url_for('static', filename='script_survey.js') }}"></script>
 </body>
 </html>
