@@ -13,6 +13,7 @@
 # limitations under the License.
 
 runtime: python39
+entrypoint: gunicorn -b :$PORT main:app
 
 handlers:
   # This configures Google App Engine to serve the files in the app's static
@@ -20,13 +21,8 @@ handlers:
 - url: /static
   static_dir: static
 
-- url: /survey
-  static_files: templates/survey.html
-  upload: templates/survey.html
-
   # This handler routes all requests not caught above to your main app. It is
   # required when static routes are defined, but can be omitted (along with
   # the entire handlers section) when there are no static files defined.
 - url: /.*
-  static_files: templates/index.html
-  upload: templates/index.html
+  script: auto 
