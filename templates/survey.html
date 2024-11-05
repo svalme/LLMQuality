@@ -2,18 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!---<script src="{{ url_for('static', filename='script_survey.js') }}"></script>-->
+    <!---<script src="{{ url_for('static', filename='script_survey.js') }}"></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
     <title>Question & Answer</title>
+    {% if theme == 'dark' %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='dark.css') }}">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% else %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='light.css') }}">
+    {% endif %}
+    <!---<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
 </head>
 <body>
-    <h2>Question</h2>
-    <p>{{ qa.question }}</p>
-    <h2>Answer</h2>
-    <p id="answer" style="visibility: hidden;">{{ qa.answer }}</p>
-    
-    <form action="{{ url_for('next_question') }}" method="get">
-        <button type="submit">Next</button>
-    </form>
+
+    <div class="container">
+        <div class="circle-cornered">
+            <p>{{ qa.question }}</p>
+        </div>
+
+        <div class ="answer">
+            <p id="answer" style="visibility: hidden;">{{ qa.answer }}</p>
+        </div>
+    </div>
+
+    <div class="sticky-element">
+        <form action="{{ url_for('next_question') }}" method="get">
+            <button type="submit">Next</button>
+        </form>
+    </div>
+
 
     <script src="{{ url_for('static', filename='script_survey.js') }}"></script>
 </body>

@@ -27,4 +27,11 @@ function revealMessage() {
 }
 
 // Reveal message every 500 milliseconds (0.5 seconds)
-let revealInterval = setInterval(revealMessage, 50);
+//let revealInterval = setInterval(revealMessage, 50);
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    // Do something when Enter is pressed
+    setInterval(revealMessage, 50);
+  } 
+});

@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template, session, redirect, url_for, request
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Needed to use session
@@ -71,7 +71,35 @@ qa_pairs = [{"question": q, "answer": answers[i]} for i, q in enumerate(question
 # home page
 @app.route("/")
 def index():
-    return render_template("index.html")
+    theme = session.get('theme', 'light')
+    return render_template("index.html", theme=theme)
+
+@app.route('/set_color', methods=['POST'])
+def set_color():
+    # Get the color from the form and store it in the session
+    color = request.form.get('color')
+    session['bg_color'] = color
+    return redirect(url_for('index'))
+
+@app.route('/toggle-theme')
+def toggle_theme():
+    # Check current theme; default to 'light' if not set
+    current_theme = session.get('theme', 'light')
+    
+    # Toggle theme
+    if current_theme == 'light':
+        session['theme'] = 'dark'
+    else:
+        session['theme'] = 'light'
+    
+    return redirect(url_for('index'))
+
+# Define a context processor to inject theme into every template
+@app.context_processor
+def inject_theme():
+    # Get the theme from session, default to 'light' if not set
+    theme = session.get('theme', 'light')
+    return {'theme': theme}
 
 # survey page
 @app.route("/survey")
