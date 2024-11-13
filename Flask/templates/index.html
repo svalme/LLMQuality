@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page</title>
+    {% if theme == 'dark' %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='dark.css') }}">
+    {% else %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='light.css') }}">
+    {% endif %}
+    <!--<style>
+        /* Use the background color from the session */
+        body {
+            background-color: {{ bg_color }};
+        }
+    </style>-->
+</head>
+<body>
+    <h1>LLM Quality</h1>
+    
+    <p>Experiment Instructions</p>
+    <ul>
+        <li>In this study, you will be presented with 5 rounds of questions.</li>
+        <li>Each round will show you 2 different questions with corresponding answers.</li>
+        <li>For each question, select the answer you prefer and rate the relevance, validity, and explainability of each answer on a scale of 1-5.</li>
+    </ul>
+
+    <!-- Button to go to the second page -->
+    <form action="{{ url_for('survey') }}" method="get">
+        <button type="submit">Start Survey</button>
+    </form>
+    <a href="{{ url_for('toggle_theme') }}">Toggle Theme</a>
+    <!--
+    <form action="{{ url_for('set_color') }}" method="post">
+        <label for="color">Choose a color:</label>
+        <input type="text" id="color" name="color" placeholder="e.g., lightblue">
+        <button type="submit">Set Background Color</button>
+    </form>-->
+</body>
+</html>

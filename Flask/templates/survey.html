@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!---<script src="{{ url_for('static', filename='script_survey.js') }}"></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
+    <title>Question & Answer</title>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% if theme == 'dark' %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='dark.css') }}">
+    {% else %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='light.css') }}">
+    {% endif %}
+    <!---<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
+</head>
+<body>
+
+    <div class="container">
+        <div class="circle-cornered">
+            <p>{{ qa.question }}</p>
+        </div>
+
+        <div class ="answer">
+            <p id="answer" style="visibility: hidden;">{{ qa.answer }}</p>
+        </div>
+    </div>
+
+    <div class="sticky-element">
+        <form action="{{ url_for('next_question') }}" method="get">
+            <button type="submit">Next</button>
+        </form>
+    </div>
+
+    <!-- Spacer div to create scrolling effect -->
+    <div class="spacer"></div>
+
+    <!-- Form section below spacer -->
+    <div class="form-section">
+        <h2>Select an Option</h2>
+        <form method="POST" action="{{ url_for('add_data_to_session') }}">
+            <label>
+                <input type="radio" name="option" value="Option 1"> Option 1
+            </label><br>
+            <label>
+                <input type="radio" name="option" value="Option 2"> Option 2
+            </label><br>
+            <label>
+                <input type="radio" name="option" value="Option 3"> Option 3
+            </label><br>
+            <label>
+                <input type="radio" name="option" value="Option 4"> Option 4
+            </label><br>
+            <label>
+                <input type="radio" name="option" value="Option 5"> Option 5
+            </label><br><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='script_survey.js') }}"></script>
+</body>
+</html>
