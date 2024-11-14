@@ -160,64 +160,61 @@ def display_sliders_collect_responses(q, round_num):
 			st.session_state['current_question'] = 0
 		else:
 			st.session_state['current_question'] = 1
-			st.session_state['refresh_key'] = not st.session_state['refresh_key']
+			#st.session_state['refresh_key'] = not st.session_state['refresh_key']
 
-	else:
-		st.stop()
+		st.rerun()
 
-
+	
 def start_questioning():
-	for round_num in range(st.session_state['current_round'], NUM_ROUNDS + 1):
 
-			st.markdown(f"### Round {round_num}")
-
-
-
-			start_index = (round_num - 1) * 2
-
-
-
-			for q in range(st.session_state['current_question'], 2):
-
-				q_index = start_index + q
-
-				question_key = f"round_{round_num}_q_{q}"
-
-
-
-				st.markdown(f"#### Question {q+1}")
-
-				st.write(st.session_state['remaining_questions'][q_index])
+	
+	# If the survey is started, begin showing questions
+	if st.session_state['survey_started']:
+		round_num = st.session_state['current_round']
+		q = st.session_state['current_question']
+		
+		st.markdown(f"### Round {round_num}")
+		
+		# Calculate question index for current question in the round
+		start_index = (round_num - 1) * 2
+		q_index = start_index + q  # The index for the current question
+		
+		if q_index < len(questions):  # Ensure within bounds
+			
+			question_key = f"round_{round_num}_q_{q}"
 
 
 
-				# Display GPT 4o Output 1
+			st.markdown(f"#### Question {q+1}")
 
-				with st.expander("Click to see GPT 4o Output 1"):
-
-					st.write(answers[q_index][0])
+			st.write(st.session_state['remaining_questions'][q_index])
 
 
 
-				# Show thinking animation only once per question
+			# Display GPT 4o Output 1
 
-				if question_key not in st.session_state['thinking_shown']:
-
-					show_thinking_animation()
-
-					st.session_state['thinking_shown'][question_key] = True
+			with st.expander("Click to see GPT 4o Output 1"):
+				st.write(answers[q_index][0])
 
 
 
-				# Display GPT 4o Output 2
+			# Show thinking animation only once per question
+			if question_key not in st.session_state['thinking_shown']:
 
-				with st.expander("Click to see GPT 4o Output 2"):
+				show_thinking_animation()
 
-					st.write(answers[q_index][1])
+				st.session_state['thinking_shown'][question_key] = True
 
 
 
-				display_sliders_collect_responses(q, round_num)
+			# Display GPT 4o Output 2
+
+			with st.expander("Click to see GPT 4o Output 2"):
+
+				st.write(answers[q_index][1])
+
+
+			display_sliders_collect_responses(q, round_num)
 
 
 def intro_statement():
