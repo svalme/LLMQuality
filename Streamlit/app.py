@@ -4,498 +4,308 @@ import time
 
 import requests
 
-import os
 
-import csv
 
-from datetime import datetime
-
- 
+from questions import *
+import random
 
 # Define study constants
 
 NUM_ROUNDS = 3
 
- 
 
-# Define questions (reasoning based)
 
-questions = [
 
-    "Laird: Pure research provides us with new technologies that contribute to saving lives. Even more worthwhile than this, however, is its role in expanding our knowledge and providing new, unexplored ideas. Kim: Your priorities are mistaken. Saving lives is what counts most of all. Without pure research, medicine would not be as advanced as it is. Laird and Kim disagree on whether pure research: (A) derives its significance from new technologies, (B) expands our knowledge of medicine, (C) should prioritize saving lives, (D) has its value in medical applications, or (E) has value only in providing technologies to save lives?",
 
-    "Executive: We recently ran a set of advertisements in a travel magazine and on its website. We were unable to get direct information about consumer response to the print ads. However, we found that consumer response to the website ads was much more limited than typical. We concluded that consumer response to the print ads was probably below par. The executive’s reasoning does which one of the following? (A) base a prediction on information about intensity of a phenomenon’s cause, (B) use typical frequency to draw conclusions about a particular event, (C) infer a statistical generalization from specific instances, (D) use a case with direct evidence to draw conclusions about an analogous case, or (E) base a prediction on facts about recent comparable events?",
-
-    "During the construction of the Quebec Bridge in 1907, designer Theodore Cooper learned of a downward deflection of the span. Before he could act, the cantilever arm broke, causing the worst construction disaster in history. The inquiry that followed changed the engineering rules of thumb used worldwide. Which one of the following can be inferred from the passage? (A) Bridges built before 1907 were unsafe due to lack of analysis, (B) Cooper’s absence caused the cantilever to break, (C) Engineers relied on rules of thumb due to inadequate methods, (D) Only rigorous analysis could have prevented the collapse, or (E) Prior to 1907, mathematical analysis was insufficient for safety.",
-
-    "The supernova event of 1987 is notable for the absence of the neutron star that should have remained after such an explosion, despite extensive searches for its radiation. Thus, current theory claiming that certain supernovas always produce neutron stars is likely incorrect. Which one of the following strengthens the argument? (A) Most detected remnants have a nearby neutron star, (B) Neutron stars have been found farther away than the 1987 location, (C) The 1987 supernova was the first observed in progress, (D) Several features of the supernova match current theory, or (E) Some neutron stars arise from causes other than supernovae.",
-
-    "Political scientist: Democracy does not promote political freedom; historical examples show democracies can lead to oppression, while some despotisms provide freedom. The reasoning is flawed because it (A) confuses necessary with sufficient conditions for freedom, (B) fails to consider that increased freedom might lead to more democracy, (C) appeals to irrelevant historical examples, (D) overlooks that democracy can promote freedom without being necessary or sufficient, or (E) bases its case on a personal viewpoint.",
-
-    "Journalist: To balance the need for profits to support drug research with the moral imperative to provide medicines to those in need, some pharmaceutical companies sell drugs at high prices in rich nations and lower prices in poor ones. This practice is unjustified. Which principle most helps to justify the journalist’s reasoning? (A) The ill deserve more consideration than the healthy, (B) Wealthy institutions must use resources to assist the incapable, (C) Special consideration depends on needs rather than societal characteristics, (D) People in wealthy nations shouldn't have better healthcare than those in poorer nations, or (E) Unequal access to healthcare is more unfair than unequal wealth distribution.",
-
-]
-
- 
-
-# Define answers (GPT 4o)
-
-answers = {
-
-    0: [
-
-        "Laird and Kim have contrasting views on the value of pure research, with Laird focusing on the intrinsic worth of expanding knowledge and sparking new ideas, while Kim prioritizes its life-saving applications. Laird argues that pure research should not be confined to practical applications but valued for fostering intellectual growth. Kim, on the other hand, sees the life-saving potential of pure research as the most significant aspect. The correct answer is (C), as their disagreement fundamentally revolves around whether pure research should prioritize saving lives over advancing knowledge for its own sake.",
-
-        "Laird and Kim’s debate revolves around the value of pure research, with Laird emphasizing its role in expanding knowledge and generating new ideas, while Kim focuses on its life-saving applications. Laird argues that research has intrinsic worth by pushing the boundaries of human understanding, which he sees as more valuable than its immediate practical benefits. Kim, however, takes a pragmatic view, emphasizing the direct impact of research on medicine and its capacity to save lives. This fundamental disagreement points to (C), as they differ on whether pure research should prioritize life-saving outcomes over knowledge for knowledge’s sake.",
-
-    ],
-
-    1: [
-
-        "The executive's reasoning infers consumer response to print ads based on the underwhelming response to digital ads in the same campaign. This assumption draws parallels between two advertising mediums within the same context without direct evidence from print media. The reasoning uses the digital response as an analogy to make inferences about print, which makes (D) the most accurate answer. The executive's argument relies on analogous evidence due to the lack of direct information on the print ads’ impact.",
-
-        "The executive’s conclusion is based on limited consumer response to online advertisements, extrapolating that response levels to print ads were likely below par as well. The reasoning here involves inferring from an analogous case, as the executive uses data from one medium (online ads) to predict the results of another (print ads) within the same campaign context. Thus, (D) is the correct answer, highlighting the use of indirect evidence to draw conclusions about a related but unmeasured case.",
-
-    ],
-
-    2: [
-
-        "The Quebec Bridge disaster highlights the limitations of engineering practices that relied on informal 'rules of thumb' before formal guidelines were developed. This suggests that engineers used such rules because rigorous analytical methods or technologies were inadequate at the time. Thus, the correct inference is (C), indicating that reliance on less formalized methods was not necessarily negligent but instead a product of limited engineering resources and analysis available before the incident reformed engineering practices.",
-
-        "The collapse of the Quebec Bridge in 1907 revealed a significant reliance on informal engineering methods. This event, followed by a shift in engineering standards, suggests that engineers previously depended on rules of thumb, likely due to inadequate or less rigorous analytical methods. Therefore, (C) is the best answer, as it reflects the historical reliance on simplified methods that were later deemed insufficient, underscoring the limitations in engineering practices prior to the disaster.",
-
-    ],
-
-    3: [
-
-        "The absence of a neutron star after the 1987 supernova challenges the assumption that such explosions always produce neutron stars. Supporting this argument requires evidence that neutron stars can arise from events other than supernovas, which would make the exception in 1987 plausible. The best answer is (E), as it introduces the idea that alternative causes for neutron star formation exist, reinforcing the claim that the supernova’s unique outcome does not invalidate the general theory but suggests other formation pathways.",
-
-        "The missing neutron star following the 1987 supernova raises questions about the theory that supernovas always result in neutron stars. Evidence that other sources can create neutron stars, as in (E), strengthens the argument by challenging the notion that neutron stars must arise exclusively from supernovas, thereby allowing for variability in post-supernova remnants and supporting the anomalous outcome of the 1987 event.",
-
-    ],
-
-    4: [
-
-        "The political scientist's argument asserts that democracy does not inherently promote freedom, citing examples of democratic oppression and despotisms that allow freedom. This reasoning confuses the concepts of necessary and sufficient conditions for freedom; just because democracy is not a guaranteed path to freedom, it does not mean it cannot promote it. Therefore, the best answer is (A), as the scientist mistakenly equates democracy’s lack of sufficiency for freedom with its complete inability to support freedom.",
-
-        "The political scientist’s reasoning suggests that democracy does not guarantee freedom, using examples of democratic oppression and freedoms within certain despotisms. This logic conflates necessary and sufficient conditions, as democracy’s lack of absolute guarantee for freedom does not imply it is incapable of fostering it under the right conditions. The answer, therefore, is (A), indicating the flaw lies in confusing democracy’s potential for promoting freedom with its necessity or sufficiency in doing so.",
-
-    ],
-
-    5: [
-
-        "The journalist critiques the practice of pharmaceutical companies setting high drug prices in wealthy nations and lower prices in poor ones, implying that equal access to healthcare should be the priority. This argument relies on a principle that those in need should receive priority consideration regardless of their country’s economic status. The answer is (A), as it aligns with the journalist’s perspective that moral obligations should focus on those in the greatest need, rather than differentiating based on wealth.",
-
-        "The journalist critiques the pharmaceutical pricing model, arguing it is unjust for companies to charge higher prices in wealthier countries and lower prices in poorer ones, hinting at a moral imperative for equitable access. The argument hinges on the principle that those in greater need should receive more consideration, regardless of their country’s wealth. This aligns with (A), as it suggests that moral obligations should prioritize those in need rather than making distinctions based on economic status.",
-
-    ],
-
-}
-
- 
 
 def submit_to_google_form(data):
 
-    """Submit response data to Google Form."""
+	"""Submit response data to Google Form."""
 
-    # Google Form URL (formResponse endpoint)
+	# Google Form URL (formResponse endpoint)
 
-    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdVo6Tw-ahAB3sSPKYH6u75LKmnXgt-3neDDorqM-DIzcBCBw/formResponse"
+	form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdVo6Tw-ahAB3sSPKYH6u75LKmnXgt-3neDDorqM-DIzcBCBw/formResponse"
 
- 
 
-    # Form data with entry IDs
 
-    form_data = {
+	# Form data with entry IDs
 
-        'entry.132741864': data['round'],            # Round number field
+	form_data = {
 
-        'entry.1766629492': data['question'],         # Question number field
+		'entry.132741864': data['round'],            # Round number field
 
-        'entry.1357460269': data['preference'],       # Preference field
+		'entry.1766629492': data['question'],         # Question number field
 
-        'entry.312523467': data['relevance_1'],       # Answer 1 Relevance field
+		'entry.1357460269': data['preference'],       # Preference field
 
-        'entry.541926730': data['relevance_2'],       # Answer 2 Relevance field
+		'entry.312523467': data['relevance_1'],       # Answer 1 Relevance field
 
-        'entry.1624496186': data['validity_1'],       # Answer 1 Validity field
+		'entry.541926730': data['relevance_2'],       # Answer 2 Relevance field
 
-        'entry.2065218302': data['validity_2'],       # Answer 2 Validity field
+		'entry.1624496186': data['validity_1'],       # Answer 1 Validity field
 
-        'entry.652819736': data['explainability_1'],  # Answer 1 Explainability field
+		'entry.2065218302': data['validity_2'],       # Answer 2 Validity field
 
-        'entry.1063036354': data['explainability_2']  # Answer 2 Explainability field
+		'entry.652819736': data['explainability_1'],  # Answer 1 Explainability field
 
-    }
+		'entry.1063036354': data['explainability_2']  # Answer 2 Explainability field
 
- 
+	}
 
-    headers = {
 
-        'Referer': form_url,
 
-        'User-Agent': 'Mozilla/5.0'
+	headers = {
 
-    }
+		'Referer': form_url,
 
- 
+		'User-Agent': 'Mozilla/5.0'
 
-    try:
+	}
 
-        response = requests.post(
 
-            form_url,
 
-            data=form_data,
+	try:
 
-            headers=headers
+		response = requests.post(
 
-        )
+			form_url,
 
- 
+			data=form_data,
 
-        if response.status_code == 200:
+			headers=headers
 
-            st.success("Response submitted successfully!")
+		)
 
-        else:
 
-            st.error(f"Error submitting response. Status code: {response.status_code}")
 
-            st.info("Recording response locally...")
+		if response.status_code == 200:
 
-            save_response_locally(data)
+			st.success("Response submitted successfully!")
 
- 
+		else:
 
-    except Exception as e:
+			st.error(f"Error submitting response. Status code: {response.status_code}")
 
-        st.error(f"Error submitting response: {e}")
+			st.info("Recording response locally...")
 
-        st.info("Recording response locally...")
+			save_response_locally(data)
 
-        save_response_locally(data)
 
- 
 
-def save_response_locally(data):
+	except Exception as e:
 
-    filename = 'responses.csv'
+		st.error(f"Error submitting response: {e}")
 
-    exists = os.path.exists(filename)
+		st.info("Recording response locally...")
 
-    with open(filename, 'a', newline='') as f:
+		save_response_locally(data)
 
-        writer = csv.writer(f)
 
-        if not exists:
 
-            writer.writerow(['Timestamp', 'Round', 'Question', 'Preference',
 
-                             'Relevance1', 'Relevance2', 'Validity1', 'Validity2',
 
-                             'Explainability1', 'Explainability2'])
 
-        writer.writerow([datetime.now(), data['round'], data['question'], data['preference'],
-
-                         data['relevance_1'], data['relevance_2'], data['validity_1'],
-
-                         data['validity_2'], data['explainability_1'], data['explainability_2']])
-
- 
 
 def show_thinking_animation():
 
-    """Display the thinking animation and mark it as shown."""
+	"""Display the thinking animation and mark it as shown."""
 
-    st.write("Generating GPT 4o Output 2: Thinking...")
+	st.write("Generating GPT 4o Output 2: Thinking...")
 
-    my_bar = st.progress(0)
+	my_bar = st.progress(0)
 
-    for percent_complete in range(100):
+	for percent_complete in range(100):
 
-        time.sleep(0.15)
+		time.sleep(0.15)
 
-        my_bar.progress(percent_complete + 1)
+		my_bar.progress(percent_complete + 1)
 
-    st.write("Done!")
+	st.write("Done!")
 
- 
+
+def display_sliders_collect_responses(q, round_num):
+
+	# Collect responses
+	st.write("Please provide your responses below:")
+	preference = st.radio(f"Round {round_num} Question {q+1} Preference", options=['1', '2'], key=f'preference_{round_num}_{q+1}')
+
+	# Your existing sliders for relevance, validity, and explainability...
+	relevance_1 = st.slider(f"GPT 4o Output 1 Relevance (1=Not relevant, 5=Highly relevant)", min_value=1, max_value=5, key=f'relevance1_{round_num}_{q+1}')
+	relevance_2 = st.slider(f"GPT 4o Output 2 Relevance (1=Not relevant, 5=Highly relevant)", min_value=1, max_value=5, key=f'relevance2_{round_num}_{q+1}')
+	validity_1 = st.slider(f"GPT 4o Output 1 Validity (1=Not valid, 5=Highly valid)", min_value=1, max_value=5, key=f'validity1_{round_num}_{q+1}')
+	validity_2 = st.slider(f"GPT 4o Output 2 Validity (1=Not valid, 5=Highly valid)", min_value=1, max_value=5, key=f'validity2_{round_num}_{q+1}')
+	explainability_1 = st.slider(f"GPT 4o Output 1 Explainability (1=Not clear, 5=Very clear)", min_value=1, max_value=5, key=f'explain1_{round_num}_{q+1}')
+	explainability_2 = st.slider(f"GPT 4o Output 2 Explainability (1=Not clear, 5=Very clear)", min_value=1, max_value=5, key=f'explain2_{round_num}_{q+1}')
+
+	if st.button('Submit Response', key=f'submit_{round_num}_{q+1}'):
+		response_data = {
+						'round': round_num,
+						'question': q + 1,
+						'preference': preference,
+						'relevance_1': relevance_1,
+						'relevance_2': relevance_2,
+						'validity_1': validity_1,
+						'validity_2': validity_2,
+						'explainability_1': explainability_1,
+						'explainability_2': explainability_2
+					}
+
+		# Submit to Google Form
+		submit_to_google_form(response_data)
+		st.session_state['responses'].append(response_data)
+
+		# Move to next question or round
+		if q == 1:
+			st.session_state['current_round'] += 1
+			st.session_state['current_question'] = 0
+		else:
+			st.session_state['current_question'] = 1
+			st.session_state['refresh_key'] = not st.session_state['refresh_key']
+
+	else:
+		st.stop()
+
+
+def start_questioning():
+	for round_num in range(st.session_state['current_round'], NUM_ROUNDS + 1):
+
+			st.markdown(f"### Round {round_num}")
+
+
+
+			start_index = (round_num - 1) * 2
+
+
+
+			for q in range(st.session_state['current_question'], 2):
+
+				q_index = start_index + q
+
+				question_key = f"round_{round_num}_q_{q}"
+
+
+
+				st.markdown(f"#### Question {q+1}")
+
+				st.write(st.session_state['remaining_questions'][q_index])
+
+
+
+				# Display GPT 4o Output 1
+
+				with st.expander("Click to see GPT 4o Output 1"):
+
+					st.write(answers[q_index][0])
+
+
+
+				# Show thinking animation only once per question
+
+				if question_key not in st.session_state['thinking_shown']:
+
+					show_thinking_animation()
+
+					st.session_state['thinking_shown'][question_key] = True
+
+
+
+				# Display GPT 4o Output 2
+
+				with st.expander("Click to see GPT 4o Output 2"):
+
+					st.write(answers[q_index][1])
+
+
+
+				display_sliders_collect_responses(q, round_num)
+
+
+def intro_statement():
+
+	
+	st.header('CS 197 Project :computer:', divider='blue')
+
+
+
+	st.subheader(':green[Introduction]')
+
+	st.write("This study explores whether user perception of AI responses changes when responses include language suggesting that the AI 'thought' about the answer. Please read both AI responses and answer the questions accordingly. :sunglasses::sunglasses:")
+
+
+	# Preliminary button
+
+	if not st.session_state['preliminaries_done']:
+		if st.button('Ready to start?'):
+			st.session_state['preliminaries_done'] = True
+			st.success('Ready to commence.')
+			st.session_state['refresh_key'] = not st.session_state.get('refresh_key', False)  # Toggle key to proceed
+
+	# Survey start button
+	elif not st.session_state['survey_started']:
+		if st.button('Double Click here to start survey'):
+			st.session_state['survey_started'] = True
+			st.session_state['refresh_key'] = not st.session_state['refresh_key']
+
+	# Main experiment loop
+
+	else:
+
+		st.subheader(":red[Welcome to the Research Study]")
+
+		st.write(f"You will be presented with {NUM_ROUNDS} rounds of questions.")
+
+		st.write("Each round will show you 2 different questions with corresponding answers.")
+
+		start_questioning()
+
+		# After all rounds are completed
+
+		if st.session_state['current_round'] > NUM_ROUNDS:
+
+			st.success("Thank you for participating in the study!")
+
+			st.write("You can now close this tab.")	
+
 
 def main():
 
-    st.header('CS 197 Project :computer:', divider='blue')
 
- 
 
-    st.subheader(':green[Introduction]')
+	# Initialize session states
 
-    st.write("This study explores whether user perception of AI responses changes when responses include language suggesting that the AI 'thought' about the answer. Please read both AI responses and answer the questions accordingly. :sunglasses::sunglasses:")
+	if 'preliminaries_done' not in st.session_state:
 
- 
+		st.session_state['preliminaries_done'] = False
 
-    # Initialize session states
+	if 'survey_started' not in st.session_state:
 
-    if 'preliminaries_done' not in st.session_state:
+		st.session_state['survey_started'] = False
 
-        st.session_state['preliminaries_done'] = False
+	if 'thinking_shown' not in st.session_state:
 
-    if 'survey_started' not in st.session_state:
+		st.session_state['thinking_shown'] = {}
 
-        st.session_state['survey_started'] = False
+	if 'remaining_questions' not in st.session_state:
+		st.session_state['remaining_questions'] = random.sample(questions, len(questions))
 
-    if 'thinking_shown' not in st.session_state:
+	if 'current_round' not in st.session_state:
 
-        st.session_state['thinking_shown'] = {}
+		st.session_state['current_round'] = 1
 
-    if 'current_round' not in st.session_state:
+	if 'current_question' not in st.session_state:
 
-        st.session_state['current_round'] = 1
+		st.session_state['current_question'] = 0
 
-    if 'current_question' not in st.session_state:
+	if 'responses' not in st.session_state:
 
-        st.session_state['current_question'] = 0
+		st.session_state['responses'] = []
 
-    if 'responses' not in st.session_state:
 
-        st.session_state['responses'] = []
+	intro_statement()
 
- 
 
-    # Preliminary button
 
-    if not st.session_state['preliminaries_done']:
-
-        if st.button('Ready to start?'):
-
-            st.session_state['preliminaries_done'] = True
-
-            st.success('Ready to commence.')
-
-            st.session_state['refresh_key'] = not st.session_state.get('refresh_key', False)  # Toggle key to proceed
-
-   
-
-    # Survey start button
-
-    elif not st.session_state['survey_started']:
-
-        if st.button('Double Click here to start survey'):
-
-            st.session_state['survey_started'] = True
-
-            st.session_state['refresh_key'] = not st.session_state['refresh_key']
-
-   
-
-    # Main experiment loop
-
-    else:
-
-        st.subheader(":red[Welcome to the Research Study]")
-
-        st.write(f"You will be presented with {NUM_ROUNDS} rounds of questions.")
-
-        st.write("Each round will show you 2 different questions with corresponding answers.")
-
- 
-
-        for round_num in range(st.session_state['current_round'], NUM_ROUNDS + 1):
-
-            st.markdown(f"### Round {round_num}")
-
- 
-
-            start_index = (round_num - 1) * 2
-
- 
-
-            for q in range(st.session_state['current_question'], 2):
-
-                q_index = start_index + q
-
-                question_key = f"round_{round_num}_q_{q}"
-
- 
-
-                st.markdown(f"#### Question {q+1}")
-
-                st.write(questions[q_index])
-
- 
-
-                # Display GPT 4o Output 1
-
-                with st.expander("Click to see GPT 4o Output 1"):
-
-                    st.write(answers[q_index][0])
-
- 
-
-                # Show thinking animation only once per question
-
-                if question_key not in st.session_state['thinking_shown']:
-
-                    show_thinking_animation()
-
-                    st.session_state['thinking_shown'][question_key] = True
-
- 
-
-                # Display GPT 4o Output 2
-
-                with st.expander("Click to see GPT 4o Output 2"):
-
-                    st.write(answers[q_index][1])
-
- 
-
-                # Collect responses
-
-                st.write("Please provide your responses below:")
-
- 
-
-                preference = st.radio(
-
-                    f"Round {round_num} Question {q+1} Preference",
-
-                    options=['1', '2'],
-
-                    key=f'preference_{round_num}_{q+1}'
-
-                )
-
- 
-
-                # Your existing sliders for relevance, validity, and explainability...
-
-                relevance_1 = st.slider(
-
-                    f"GPT 4o Output 1 Relevance (1=Not relevant, 5=Highly relevant)",
-
-                    min_value=1, max_value=5, key=f'relevance1_{round_num}_{q+1}'
-
-                )
-
- 
-
-                relevance_2 = st.slider(
-
-                    f"GPT 4o Output 2 Relevance (1=Not relevant, 5=Highly relevant)",
-
-                    min_value=1, max_value=5, key=f'relevance2_{round_num}_{q+1}'
-
-                )
-
- 
-
-                validity_1 = st.slider(
-
-                    f"GPT 4o Output 1 Validity (1=Not valid, 5=Highly valid)",
-
-                    min_value=1, max_value=5, key=f'validity1_{round_num}_{q+1}'
-
-                )
-
- 
-
-                validity_2 = st.slider(
-
-                    f"GPT 4o Output 2 Validity (1=Not valid, 5=Highly valid)",
-
-                    min_value=1, max_value=5, key=f'validity2_{round_num}_{q+1}'
-
-                )
-
- 
-
-                explainability_1 = st.slider(
-
-                    f"GPT 4o Output 1 Explainability (1=Not clear, 5=Very clear)",
-
-                    min_value=1, max_value=5, key=f'explain1_{round_num}_{q+1}'
-
-                )
-
- 
-
-                explainability_2 = st.slider(
-
-                    f"GPT 4o Output 2 Explainability (1=Not clear, 5=Very clear)",
-
-                    min_value=1, max_value=5, key=f'explain2_{round_num}_{q+1}'
-
-                )
-
- 
-
-                if st.button('Submit Response', key=f'submit_{round_num}_{q+1}'):
-
-                    response_data = {
-
-                        'round': round_num,
-
-                        'question': q + 1,
-
-                        'preference': preference,
-
-                        'relevance_1': relevance_1,
-
-                        'relevance_2': relevance_2,
-
-                        'validity_1': validity_1,
-
-                        'validity_2': validity_2,
-
-                        'explainability_1': explainability_1,
-
-                        'explainability_2': explainability_2
-
-                    }
-
- 
-
-                    # Submit to Google Form
-
-                    submit_to_google_form(response_data)
-
-                    st.session_state['responses'].append(response_data)
-
- 
-
-                    # Move to next question or round
-
-                    if q == 1:
-
-                        st.session_state['current_round'] += 1
-
-                        st.session_state['current_question'] = 0
-
-                    else:
-
-                        st.session_state['current_question'] = 1
-
- 
-
-                    st.session_state['refresh_key'] = not st.session_state['refresh_key']
-
-                else:
-
-                    st.stop()
-
- 
-
-        # After all rounds are completed
-
-        if st.session_state['current_round'] > NUM_ROUNDS:
-
-            st.success("Thank you for participating in the study!")
-
-            st.write("You can now close this tab.")
-
- 
 
 if __name__ == '__main__':
 
-    main()
+	main()
