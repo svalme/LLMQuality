@@ -1,8 +1,8 @@
 import os
 import csv
 from datetime import datetime
-
-
+import streamlit as st
+import requests
 
 # Define questions (reasoning based)
 
@@ -21,8 +21,6 @@ questions = [
     "Journalist: To balance the need for profits to support drug research with the moral imperative to provide medicines to those in need, some pharmaceutical companies sell drugs at high prices in rich nations and lower prices in poor ones. This practice is unjustified. Which principle most helps to justify the journalist’s reasoning? (A) The ill deserve more consideration than the healthy, (B) Wealthy institutions must use resources to assist the incapable, (C) Special consideration depends on needs rather than societal characteristics, (D) People in wealthy nations shouldn't have better healthcare than those in poorer nations, or (E) Unequal access to healthcare is more unfair than unequal wealth distribution.",
 
 ]
-
- 
 
 # Define answers (GPT 4o)
 
@@ -78,27 +76,56 @@ answers = {
 
 }
 
+questions_and_answers = [{"question": questions[i], "answers": answers[i]} for i in range(len(questions))]
+
+
+def submit_to_google_form(data):
+    """Submit response data to Google Form."""
+    # Google Form URL (formResponse endpoint)
+    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdVo6Tw-ahAB3sSPKYH6u75LKmnXgt-3neDDorqM-DIzcBCBw/formResponse"
+    # Form data with entry IDs
+    form_data = {
+        'entry.132741864': data['round'],  # Round number field
+        'entry.1766629492': data['question'],  # Question number field
+        'entry.1357460269': data['preference'],  # Preference field
+        'entry.312523467': data['relevance_preference'],  # Answer Relevance field
+        'entry.1624496186': data['validity_preference'],  # Answer Validity field
+        'entry.652819736': data['explainability_preference'],  # Answer Explainability field
+    }
+
+    headers = {
+        'Referer': form_url,
+        'User-Agent': 'Mozilla/5.0'
+    }
+
+    try:
+        response = requests.post(
+            form_url,
+            data=form_data,
+            headers=headers
+        )
+
+        if response.status_code == 200:
+            st.success("Response submitted successfully!")
+        else:
+            st.error(f"Error submitting response. Status code: {response.status_code}")
+            st.info("Recording response locally...")
+            save_response_locally(data)
+
+    except Exception as e:
+        st.error(f"Error submitting response: {e}")
+        st.info("Recording response locally...")
+        save_response_locally(data)
+
 
 def save_response_locally(data):
-
-	filename = 'responses.csv'
-
-	exists = os.path.exists(filename)
-
-	with open(filename, 'a', newline='') as f:
-
-		writer = csv.writer(f)
-
-		if not exists:
-
-			writer.writerow(['Timestamp', 'Round', 'Question', 'Preference',
-
-							 'Relevance1', 'Relevance2', 'Validity1', 'Validity2',
-
-							 'Explainability1', 'Explainability2'])
-
-		writer.writerow([datetime.now(), data['round'], data['question'], data['preference'],
-
-						 data['relevance_1'], data['relevance_2'], data['validity_1'],
-
-						 data['validity_2'], data['explainability_1'], data['explainability_2']])
+    filename = 'responses.csv'
+    exists = os.path.exists(filename)
+    with open(filename, 'a', newline='') as f:
+        writer = csv.writer(f)
+        if not exists:
+            writer.writerow(
+                ['Timestamp', 'Round', 'Question', 'Preference', 'Relevance Preference', 'Validity Preference',
+                 'Explainability Preference'])
+            writer.writerow(
+                [datetime.now(), data['round'], data['question'], data['preference'], data['relevance_preference'], data['validity_preference'], data['explainability_preference']])
