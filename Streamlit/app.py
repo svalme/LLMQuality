@@ -130,25 +130,30 @@ def display_sliders_collect_responses(q, round_num):
 	preference = st.radio(f"Round {round_num} Question {q+1} Preference", options=['1', '2'], key=f'preference_{round_num}_{q+1}')
 
 	# Your existing sliders for relevance, validity, and explainability...
-	relevance_1 = st.slider(f"GPT 4o Output 1 Relevance (1=Not relevant, 5=Highly relevant)", min_value=1, max_value=5, key=f'relevance1_{round_num}_{q+1}')
-	relevance_2 = st.slider(f"GPT 4o Output 2 Relevance (1=Not relevant, 5=Highly relevant)", min_value=1, max_value=5, key=f'relevance2_{round_num}_{q+1}')
-	validity_1 = st.slider(f"GPT 4o Output 1 Validity (1=Not valid, 5=Highly valid)", min_value=1, max_value=5, key=f'validity1_{round_num}_{q+1}')
-	validity_2 = st.slider(f"GPT 4o Output 2 Validity (1=Not valid, 5=Highly valid)", min_value=1, max_value=5, key=f'validity2_{round_num}_{q+1}')
-	explainability_1 = st.slider(f"GPT 4o Output 1 Explainability (1=Not clear, 5=Very clear)", min_value=1, max_value=5, key=f'explain1_{round_num}_{q+1}')
-	explainability_2 = st.slider(f"GPT 4o Output 2 Explainability (1=Not clear, 5=Very clear)", min_value=1, max_value=5, key=f'explain2_{round_num}_{q+1}')
+            	relevance_preference= st.slider(
+                	f"GPT 4o Output 1 Relevance (1=Greater relevance in first response, 5=Greater relevance in second response)",
+                	min_value=1, max_value=5, key=f'validity_preference_{round_num}_{q+1}'
+            	)
+ 
+		validity_preference= st.slider(
+                	f"GPT 4o Output 1 Relevance (1=Greater validity in first response, 5=Greater validity in second response)",
+                	min_value=1, max_value=5, key=f'validity_preference_{round_num}_{q+1}'
+            	)
+ 
+		explainability_preference= st.slider(
+                	f"GPT 4o Output 1 Relevance (1=Greater explainability in first response, 5=Greater explainability in second response)",
+                	min_value=1, max_value=5, key=f'explainability_preference_{round_num}_{q+1}'
+            	)
 
 	if st.button('Submit Response', key=f'submit_{round_num}_{q+1}'):
-		response_data = {
-						'round': round_num,
-						'question': q + 1,
-						'preference': preference,
-						'relevance_1': relevance_1,
-						'relevance_2': relevance_2,
-						'validity_1': validity_1,
-						'validity_2': validity_2,
-						'explainability_1': explainability_1,
-						'explainability_2': explainability_2
-					}
+                	response_data = {
+                    	'round': round_num,
+                    	'question': q + 1,
+                    	'preference': preference,
+                    	'relevance_preference': relevance_preference,
+                    	'validity_preference': validity_preference,
+                    	'explainability_preference': explainability_preference
+                	}
 
 		# Submit to Google Form
 		submit_to_google_form(response_data)
