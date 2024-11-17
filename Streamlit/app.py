@@ -47,17 +47,17 @@ def display_sliders_collect_responses(q, round_num):
     # Your existing sliders for relevance, validity, and explainability...
     relevance_preference = st.slider(
         f"GPT 4o Output 1 Relevance (1=Greater relevance in first response, 5=Greater relevance in second response)",
-        min_value=1, max_value=5, key=f'relevance_preference{round_num}_{q + 1}'
+        min_value=1, max_value=5, value=3, key=f'relevance_preference{round_num}_{q + 1}'
     )
 
     validity_preference = st.slider(
         f"GPT 4o Output 1 Validity (1=Greater validity in first response, 5=Greater validity in second response)",
-        min_value=1, max_value=5, key=f'validity_preference_{round_num}_{q + 1}'
+        min_value=1, max_value=5, value=3, key=f'validity_preference_{round_num}_{q + 1}'
     )
 
     explainability_preference = st.slider(
         f"GPT 4o Output 1 Explainability (1=Greater explainability in first response, 5=Greater explainability in second response)",
-        min_value=1, max_value=5, key=f'explainability_preference_{round_num}_{q + 1}'
+        min_value=1, max_value=5, value=3, key=f'explainability_preference_{round_num}_{q + 1}'
     )
 
     if st.button('Submit Response', key=f'submit_{round_num}_{q + 1}'):
