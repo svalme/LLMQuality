@@ -80,6 +80,9 @@ def submit_button_callback():
     else:
         st.session_state['current_question_within_round'] = 1
 
+    #st.session_state.show_content = not st.session_state.show_content
+    st.session_state.placeholder_feedback.empty()
+
 
 def display_sliders_collect_responses(current_question, q, round_num):
     # Collect responses
@@ -114,7 +117,11 @@ def start_questioning():
         round_num = st.session_state['current_round']
         q = st.session_state['current_question_within_round']  # 0: with 01, 1: without o1
 
+        # Create an empty container
+        #placeholder = st.empty()
+
         st.markdown(f"### Round {round_num}")
+        #st.write("Round ", round_num)
 
         # Calculate question index for current question in the round
         start_index = (round_num - 1) * 2
@@ -128,6 +135,7 @@ def start_questioning():
             current_question.question_key = question_key
 
             st.markdown(f"#### Question {q + 1}")
+            #st.write("Question ", q + 1)
 
             response_text_update(current_question.question)
 
@@ -148,7 +156,15 @@ def start_questioning():
 
                 st.write(current_question.answers_with_o1)
 
-            display_sliders_collect_responses(current_question, q, round_num)
+
+            #st.session_state.show_content = True
+
+            #if 'placeholder_feedback' not in st.session_state:
+            st.session_state.placeholder_feedback = st.empty()
+
+            # if st.session_state.show_content:
+            with st.session_state.placeholder_feedback.container():
+                display_sliders_collect_responses(current_question, q, round_num)
 
 
 # Function to change theme
@@ -227,8 +243,6 @@ def main():
     if "themes" not in st.session_state:
         st.session_state.themes = themes
 
-    #st.session_state.themes["current_theme"] = "light"
-
     if 'preliminaries_done' not in st.session_state:
         st.session_state['preliminaries_done'] = False
 
@@ -252,6 +266,9 @@ def main():
 
     if 'responses' not in st.session_state:
         st.session_state['responses'] = []
+
+    if "show_content" not in st.session_state:
+        st.session_state.show_content = True
 
     intro_statement()
 
