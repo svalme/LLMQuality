@@ -227,6 +227,8 @@ def main():
     if "themes" not in st.session_state:
         st.session_state.themes = themes
 
+    #st.session_state.themes["current_theme"] = "light"
+
     if 'preliminaries_done' not in st.session_state:
         st.session_state['preliminaries_done'] = False
 

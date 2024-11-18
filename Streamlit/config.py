@@ -1,6 +1,6 @@
 # Define your themes
 themes = {
-    "current_theme": "light",
+    "current_theme": "dark",
     "refreshed": True,
     "light": {
         "theme.base": "dark",
