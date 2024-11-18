@@ -5,41 +5,16 @@ import time
 import requests
 
 from questions import questions_and_answers, submit_to_google_form, save_response_locally
-import random
-from config import themes, themes2
+#import random
+from config import themes, themes2, change_theme, theme_selection
+#from config import *
+from pick_ui import *
 
 from streamlit.components.v1 import html
 
 # Define study constants
 
 NUM_ROUNDS = 3
-
-
-def response_text_update(text, delay=0.05):
-    # print one character at a time
-    placeholder = st.empty()
-    displayed_text = ""
-
-    for char in text:
-        displayed_text += char
-        placeholder.text(displayed_text)
-        time.sleep(delay)
-
-
-def show_thinking_animation():
-    """Display the thinking animation and mark it as shown."""
-
-    st.write("Generating GPT 4o Output 2: Thinking...")
-
-    my_bar = st.progress(0)
-
-    for percent_complete in range(100):
-        time.sleep(0.15)
-
-        my_bar.progress(percent_complete + 1)
-
-    st.write("Done!")
-
 
 def submit_button_callback():
     q = st.session_state['current_question_within_round']  # question 0 or 1 within the round
@@ -70,7 +45,7 @@ def submit_button_callback():
     }
 
     # Submit to Google Form
-    submit_to_google_form(response_data)
+    submit_to_google_form(st, response_data)
     st.session_state['responses'].append(response_data)
 
     # Move to next question or round
@@ -137,24 +112,13 @@ def start_questioning():
             st.markdown(f"#### Question {q + 1}")
             #st.write("Question ", q + 1)
 
-            response_text_update(current_question.question)
+            response_text_update(st, current_question.question)
 
-            # Display GPT 4o Output 1
+            display_selected_ui(st, current_question, question_key)
 
-            with st.expander("Click to see GPT 4o Output 1"):
-                st.write(current_question.answers_without_o1)
 
-            # Show thinking animation only once per question
-            if question_key not in st.session_state['thinking_shown']:
-                show_thinking_animation()
 
-                st.session_state['thinking_shown'][question_key] = True
 
-            # Display GPT 4o Output 2
-
-            with st.expander("Click to see GPT 4o Output 2"):
-
-                st.write(current_question.answers_with_o1)
 
 
             #st.session_state.show_content = True
@@ -167,29 +131,7 @@ def start_questioning():
                 display_sliders_collect_responses(current_question, q, round_num)
 
 
-# Function to change theme
-def change_theme():
-    previous_theme = st.session_state.themes["current_theme"]
-    tdict = st.session_state.themes["light"] if st.session_state.themes["current_theme"] == "light" else \
-        st.session_state.themes["dark"]
-    for vkey, vval in tdict.items():
-        if vkey.startswith("theme"):
-            st._config.set_option(vkey, vval)
 
-    st.session_state.themes["refreshed"] = False
-    if previous_theme == "dark":
-        st.session_state.themes["current_theme"] = "light"
-    elif previous_theme == "light":
-        st.session_state.themes["current_theme"] = "dark"
-
-def theme_selection():
-    btn_face = st.session_state.themes["light"]["button_face"] if st.session_state.themes["current_theme"] == "light" else \
-        st.session_state.themes["dark"]["button_face"]
-    st.button(btn_face, on_click=change_theme)
-
-    if st.session_state.themes["refreshed"] == False:
-        st.session_state.themes["refreshed"] = True
-        st.rerun()
 
 
 def intro_statement():

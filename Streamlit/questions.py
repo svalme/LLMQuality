@@ -1,11 +1,11 @@
 import os
 import csv
 from datetime import datetime
-import streamlit as st
+#import streamlit as st
 import requests
 
 
-def submit_to_google_form(data):
+def submit_to_google_form(st, data):
     """Submit response data to Google Form."""
     # Google Form URL (formResponse endpoint)
     form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdVo6Tw-ahAB3sSPKYH6u75LKmnXgt-3neDDorqM-DIzcBCBw/formResponse"

@@ -1,4 +1,7 @@
 # Define your themes
+
+import streamlit as st
+
 themes = {
     "current_theme": "dark",
     "refreshed": True,
@@ -40,3 +43,27 @@ themes2 = {
                 "button_face": "🌞"
             }
         }
+
+# Function to change theme
+def change_theme():
+    previous_theme = st.session_state.themes["current_theme"]
+    tdict = st.session_state.themes["light"] if st.session_state.themes["current_theme"] == "light" else \
+        st.session_state.themes["dark"]
+    for vkey, vval in tdict.items():
+        if vkey.startswith("theme"):
+            st._config.set_option(vkey, vval)
+
+    st.session_state.themes["refreshed"] = False
+    if previous_theme == "dark":
+        st.session_state.themes["current_theme"] = "light"
+    elif previous_theme == "light":
+        st.session_state.themes["current_theme"] = "dark"
+
+def theme_selection():
+    btn_face = st.session_state.themes["light"]["button_face"] if st.session_state.themes["current_theme"] == "light" else \
+        st.session_state.themes["dark"]["button_face"]
+    st.button(btn_face, on_click=change_theme)
+
+    if st.session_state.themes["refreshed"] == False:
+        st.session_state.themes["refreshed"] = True
+        st.rerun()
