@@ -6,9 +6,10 @@ import requests
 
 from questions import questions_and_answers, submit_to_google_form, save_response_locally
 #import random
-from config import themes, themes2, change_theme, theme_selection
-#from config import *
 from pick_ui import *
+from config import themes, themes2, change_theme, theme_selection, initialize_theme
+#from config import *
+
 
 from streamlit.components.v1 import html
 
@@ -112,7 +113,8 @@ def start_questioning():
             st.markdown(f"#### Question {q + 1}")
             #st.write("Question ", q + 1)
 
-            response_text_update(st, current_question.question)
+            #st.write(current_question.question)
+            display_question(st, current_question)
 
             display_selected_ui(st, current_question, question_key)
 
@@ -185,6 +187,11 @@ def main():
     if "themes" not in st.session_state:
         st.session_state.themes = themes
 
+    if "current_theme" not in st.session_state:
+        st.session_state.current_theme = st.session_state.themes["current_theme"]
+
+    initialize_theme()
+
     if 'preliminaries_done' not in st.session_state:
         st.session_state['preliminaries_done'] = False
 
@@ -211,6 +218,9 @@ def main():
 
     if "show_content" not in st.session_state:
         st.session_state.show_content = True
+
+    if 'stage' not in st.session_state:
+        st.session_state.stage = 0
 
     intro_statement()
 

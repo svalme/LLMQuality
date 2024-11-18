@@ -3,7 +3,7 @@
 
 import random
 import time
-
+from config import apply_theme_to_question
 
 # Define all possible UI options
 UI_OPTIONS = [1, 2]
@@ -40,8 +40,10 @@ def show_thinking_animation(st):
 def display_ui_without_o1(st, current_question):
     # Display GPT 4o Output 1
 
-    with st.expander("Click to see GPT 4o Output 1"):
-        st.write(current_question.answers_without_o1)
+    #with st.expander("Click to see GPT 4o Output 1"):
+        #st.write(current_question.answers_without_o1)
+
+    response_text_update(st, current_question.answers_without_o1)
 
 def display_ui_with_o1(st, current_question, question_key):
     # Show thinking animation only once per question
@@ -52,8 +54,9 @@ def display_ui_with_o1(st, current_question, question_key):
 
     # Display GPT 4o Output 2
 
-    with st.expander("Click to see GPT 4o Output 2"):
-        st.write(current_question.answers_with_o1)
+    response_text_update(st, current_question.answers_with_o1)
+    #with st.expander("Click to see GPT 4o Output 2"):
+        #st.write(current_question.answers_with_o1)
 
 def display_selected_ui(st, current_question, question_key):
     # display selected ui: a ui with or without thinking
@@ -62,6 +65,13 @@ def display_selected_ui(st, current_question, question_key):
         display_ui_without_o1(st, current_question)
     elif st.session_state.selected_ui == 2:
         display_ui_with_o1(st, current_question, question_key)
+
+def display_question(st, current_question):
+    apply_theme_to_question()
+    #apply_theme_to_question(st)
+    st.markdown(f'<div class="my-container">{current_question.question}</div>', unsafe_allow_html=True)
+      #  st.write(current_question.question)
+
 
 def response_text_update(st, text, delay=0.05):
     # print one character at a time
