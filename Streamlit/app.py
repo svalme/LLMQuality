@@ -6,7 +6,7 @@ import requests
 
 from questions import questions_and_answers, submit_to_google_form, save_response_locally
 import random
-from config import themes
+from config import themes, themes2
 
 from streamlit.components.v1 import html
 
@@ -80,8 +80,6 @@ def submit_button_callback():
     else:
         st.session_state['current_question_within_round'] = 1
 
-    # st.rerun()
-
 
 def display_sliders_collect_responses(current_question, q, round_num):
     # Collect responses
@@ -109,9 +107,6 @@ def display_sliders_collect_responses(current_question, q, round_num):
 
     st.button('Submit Response', on_click=submit_button_callback, key=f'submit_{round_num}_{q + 1}')
 
-    # submit_button =
-    # submit_button = st.form_submit_button('Submit Response', on_click=submit_button_callback, key=f'submit_{round_num}_{q + 1}')
-
 
 def start_questioning():
     # If the survey is started, begin showing questions
@@ -136,8 +131,6 @@ def start_questioning():
 
             response_text_update(current_question.question)
 
-            #st.write(current_question.question)
-
             # Display GPT 4o Output 1
 
             with st.expander("Click to see GPT 4o Output 1"):
@@ -158,48 +151,11 @@ def start_questioning():
             display_sliders_collect_responses(current_question, q, round_num)
 
 
-# Apply the theme using custom CSS
-# Function to apply the selected theme's CSS dynamically
-def apply_theme(theme_name):
-    theme = themes[theme_name]  # Get the selected theme from the dictionary
-
-    st.markdown(
-        f"""
-            <style>
-            body {{
-                background-color: {theme['backgroundColor']};
-                color: {theme['textColor']};
-            }}
-            .css-1v3fvcr {{
-                background-color: {theme['backgroundColor']};
-                color: {theme['textColor']};
-            }}
-            .stButton>button {{
-                background-color: {theme['primaryColor']};
-                color: white;
-            }}
-            .stTextInput>div>div>input {{
-                background-color: {theme['secondaryBackgroundColor']};
-                color: {theme['textColor']};
-            }}
-            /*.stSelectbox>div>div>div {{
-                background-color: {theme['secondaryBackgroundColor']};
-                color: {theme['textColor']};
-            }}*/
-            </style>
-            """,
-        unsafe_allow_html=True
-    )
-
-
-
-    #st.rerun()
-
 # Function to change theme
 def change_theme():
     previous_theme = st.session_state.themes["current_theme"]
     tdict = st.session_state.themes["light"] if st.session_state.themes["current_theme"] == "light" else \
-    st.session_state.themes["dark"]
+        st.session_state.themes["dark"]
     for vkey, vval in tdict.items():
         if vkey.startswith("theme"):
             st._config.set_option(vkey, vval)
@@ -210,15 +166,8 @@ def change_theme():
     elif previous_theme == "light":
         st.session_state.themes["current_theme"] = "dark"
 
-def on_theme_change():
-    # Store the selected theme in session state
-    st.session_state.theme = st.session_state.theme_selectbox
-    apply_theme(st.session_state.theme)
-    #st.rerun()
-
 def theme_selection():
-    btn_face = st.session_state.themes["light"]["button_face"] if st.session_state.themes[
-                                                                      "current_theme"] == "light" else \
+    btn_face = st.session_state.themes["light"]["button_face"] if st.session_state.themes["current_theme"] == "light" else \
         st.session_state.themes["dark"]["button_face"]
     st.button(btn_face, on_click=change_theme)
 
@@ -272,37 +221,11 @@ def intro_statement():
 
 
 def main():
-    # Initialize session states
-   # if "theme" not in st.session_state:
-   #     st.session_state.theme = "light"
-
-    if "themes" not in st.session_state:
-        st.session_state.themes = {
-            "current_theme": "light",
-            "refreshed": True,
-            "light": {
-                "theme.base": "dark",
-                "theme.backgroundColor": "black",
-                "theme.primaryColor": "#c98bdb",
-                "theme.secondaryBackgroundColor": "#5591f5",
-                "theme.textColor": "white",
-                "button_face": "🌜"
-            },
-            "dark": {
-                "theme.base": "light",
-                "theme.backgroundColor": "white",
-                "theme.primaryColor": "#5591f5",
-                "theme.secondaryBackgroundColor": "#82E1D7",
-                "theme.textColor": "#0a1464",
-                "button_face": "🌞"
-            }
-        }
-
     st.set_page_config(page_title="O1 Study", page_icon="🎨")
 
-    # Apply the current theme
-    #apply_theme(themes[st.session_state.theme])
-   # on_theme_change(themes[st.session_state.theme])
+    # Initialize session states
+    if "themes" not in st.session_state:
+        st.session_state.themes = themes
 
     if 'preliminaries_done' not in st.session_state:
         st.session_state['preliminaries_done'] = False
@@ -329,8 +252,6 @@ def main():
         st.session_state['responses'] = []
 
     intro_statement()
-
-
 
 
 if __name__ == '__main__':
