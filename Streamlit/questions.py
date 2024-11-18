@@ -4,6 +4,60 @@ from datetime import datetime
 import streamlit as st
 import requests
 
+
+def submit_to_google_form(data):
+    """Submit response data to Google Form."""
+    # Google Form URL (formResponse endpoint)
+    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdVo6Tw-ahAB3sSPKYH6u75LKmnXgt-3neDDorqM-DIzcBCBw/formResponse"
+    # Form data with entry IDs
+    form_data = {
+        'entry.132741864': data['round'],  # Round number field
+        'entry.1766629492': data['question'],  # Question number field
+        'entry.1357460269': data['preference'],  # Preference field
+        'entry.312523467': data['relevance_preference'],  # Answer Relevance field
+        'entry.1624496186': data['validity_preference'],  # Answer Validity field
+        'entry.652819736': data['explainability_preference'],  # Answer Explainability field
+    }
+
+    headers = {
+        'Referer': form_url,
+        'User-Agent': 'Mozilla/5.0'
+    }
+
+    try:
+        response = requests.post(
+            form_url,
+            data=form_data,
+            headers=headers
+        )
+
+        if response.status_code == 200:
+            st.success("Response submitted successfully!")
+        else:
+            st.error(f"Error submitting response. Status code: {response.status_code}")
+            st.info("Recording response locally...")
+            save_response_locally(data)
+
+    except Exception as e:
+        st.error(f"Error submitting response: {e}")
+        st.info("Recording response locally...")
+        save_response_locally(data)
+
+
+def save_response_locally(data):
+    filename = 'responses.csv'
+    exists = os.path.exists(filename)
+    with open(filename, 'a', newline='') as f:
+        writer = csv.writer(f)
+        if not exists:
+            writer.writerow(
+                ['Timestamp', 'Round', 'Question', 'Preference', 'Relevance Preference', 'Validity Preference',
+                 'Explainability Preference'])
+            writer.writerow(
+                [datetime.now(), data['round'], data['question'], data['preference'], data['relevance_preference'],
+                 data['validity_preference'], data['explainability_preference']])
+
+
 # Define questions (reasoning based)
 
 questions = [
@@ -76,56 +130,30 @@ answers = {
 
 }
 
-questions_and_answers = [{"question": questions[i], "answers": answers[i]} for i in range(len(questions))]
+
+# questions_and_answers = [{"question": questions[i], "answers": answers[i]} for i in range(len(questions))]
+
+class SliderResponses:
+    def __init__(self):
+        self.relevance_preference = None
+        self.validity_preference = None
+        self.explainability_preference = None
 
 
-def submit_to_google_form(data):
-    """Submit response data to Google Form."""
-    # Google Form URL (formResponse endpoint)
-    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdVo6Tw-ahAB3sSPKYH6u75LKmnXgt-3neDDorqM-DIzcBCBw/formResponse"
-    # Form data with entry IDs
-    form_data = {
-        'entry.132741864': data['round'],  # Round number field
-        'entry.1766629492': data['question'],  # Question number field
-        'entry.1357460269': data['preference'],  # Preference field
-        'entry.312523467': data['relevance_preference'],  # Answer Relevance field
-        'entry.1624496186': data['validity_preference'],  # Answer Validity field
-        'entry.652819736': data['explainability_preference'],  # Answer Explainability field
-    }
-
-    headers = {
-        'Referer': form_url,
-        'User-Agent': 'Mozilla/5.0'
-    }
-
-    try:
-        response = requests.post(
-            form_url,
-            data=form_data,
-            headers=headers
-        )
-
-        if response.status_code == 200:
-            st.success("Response submitted successfully!")
-        else:
-            st.error(f"Error submitting response. Status code: {response.status_code}")
-            st.info("Recording response locally...")
-            save_response_locally(data)
-
-    except Exception as e:
-        st.error(f"Error submitting response: {e}")
-        st.info("Recording response locally...")
-        save_response_locally(data)
+class QuestionsAndAnswers:
+    def __init__(self, question, answers_list):
+        self.question = question
+        self.question_key = None
+        self.answers_without_o1 = answers_list[0]
+        self.answers_with_o1 = answers_list[1]
+        self.response_preference = None  # User's preferred answer: with or without o1; without o1: 0, with o1: 1
+        self.sliders = [SliderResponses(), SliderResponses()]
+        self.question_identifier = None # not the index but a numerical value paired with each question
 
 
-def save_response_locally(data):
-    filename = 'responses.csv'
-    exists = os.path.exists(filename)
-    with open(filename, 'a', newline='') as f:
-        writer = csv.writer(f)
-        if not exists:
-            writer.writerow(
-                ['Timestamp', 'Round', 'Question', 'Preference', 'Relevance Preference', 'Validity Preference',
-                 'Explainability Preference'])
-            writer.writerow(
-                [datetime.now(), data['round'], data['question'], data['preference'], data['relevance_preference'], data['validity_preference'], data['explainability_preference']])
+questions_and_answers = []
+for i, question_text in enumerate(questions):
+    #answers = answers[i]
+    question_and_answer = QuestionsAndAnswers(question_text, answers[i])
+    questions_and_answers.append(question_and_answer)
+    # st.session_state.questions.append(question)
