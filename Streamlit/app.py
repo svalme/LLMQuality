@@ -5,10 +5,10 @@ import time
 import requests
 
 from questions import questions_and_answers, submit_to_google_form, save_response_locally
-#import random
+# import random
 from pick_ui import *
 from config import themes, themes2, change_theme, theme_selection, initialize_theme
-#from config import *
+# from config import *
 
 
 from streamlit.components.v1 import html
@@ -16,6 +16,7 @@ from streamlit.components.v1 import html
 # Define study constants
 
 NUM_ROUNDS = 3
+
 
 def submit_button_callback():
     q = st.session_state['current_question_within_round']  # question 0 or 1 within the round
@@ -56,7 +57,7 @@ def submit_button_callback():
     else:
         st.session_state['current_question_within_round'] = 1
 
-    #st.session_state.show_content = not st.session_state.show_content
+    # st.session_state.show_content = not st.session_state.show_content
     st.session_state.placeholder_feedback.empty()
 
 
@@ -84,9 +85,10 @@ def display_sliders_collect_responses(current_question, q, round_num):
         min_value=1, max_value=5, value=3, key=f'explainability_preference_{round_num}_{q + 1}'
     )
 
-    if st.button('Submit Response', key=f'submit_{round_num}_{q + 1}'):
-        submit_button_callback()
+    #if st.button('Submit Response', key=f'submit_{round_num}_{q + 1}'):
+     #   submit_button_callback()
 
+    st.button("Submit Response", key=f'submit_{round_num}_{q + 1}', on_click=submit_button_callback)
 
 
 def start_questioning():
@@ -94,12 +96,13 @@ def start_questioning():
     if st.session_state['survey_started']:
         round_num = st.session_state['current_round']
         q = st.session_state['current_question_within_round']  # 0: with 01, 1: without o1
+        with_or_without_o1 = st.session_state['selected_ui']
 
         # Create an empty container
-        #placeholder = st.empty()
+        # placeholder = st.empty()
 
         st.markdown(f"### Round {round_num}")
-        #st.write("Round ", round_num)
+        # st.write("Round ", round_num)
 
         # Calculate question index for current question in the round
         start_index = (round_num - 1) * 2
@@ -109,33 +112,29 @@ def start_questioning():
 
             current_question = st.session_state['remaining_questions'][q_index]
 
-            question_key = f"round_{round_num}_q_{q}"
+            if with_or_without_o1 == 0:
+                question_key = f"round_{round_num}_q_{q}_without_o1"
+            else:  # with_or_without_o1 == 1
+                question_key = f"round_{round_num}_q_{q}_with_o1"
+
             current_question.question_key = question_key
 
             st.markdown(f"#### Question {q + 1}")
-            #st.write("Question ", q + 1)
+            # st.write("Question ", q + 1)
 
-            #st.write(current_question.question)
-            display_question(st, current_question)
+            # st.write(current_question.question)
+            display_question(current_question)
 
-            display_selected_ui(st, current_question, question_key)
+            display_selected_ui(current_question, question_key)
 
+            # st.session_state.show_content = True
 
-
-
-
-
-            #st.session_state.show_content = True
-
-            #if 'placeholder_feedback' not in st.session_state:
+            # if 'placeholder_feedback' not in st.session_state:
             st.session_state.placeholder_feedback = st.empty()
 
             # if st.session_state.show_content:
             with st.session_state.placeholder_feedback.container():
                 display_sliders_collect_responses(current_question, q, round_num)
-
-
-
 
 
 def intro_statement():
@@ -214,6 +213,11 @@ def main():
 
     if 'current_question' not in st.session_state:  # question within the list
         st.session_state['current_question'] = st.session_state['remaining_questions'][0]  # first question
+
+    if 'selected_ui' not in st.session_state:  # answer with or without o1
+        st.session_state['selected_ui'] = random.choice([0, 1])
+        if 'first_answer_ui_chosen' not in st.session_state:
+            st.session_state['first_answer_ui_chosen'] = True
 
     if 'responses' not in st.session_state:
         st.session_state['responses'] = []
