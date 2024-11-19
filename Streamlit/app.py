@@ -23,18 +23,18 @@ def submit_button_callback():
 
     current_question = st.session_state['current_question']
 
-    # update current_question with submitted form responses
+    # Update current_question with submitted form responses
     response_preference_key = f'response_preference_{round_num}_{q + 1}'
-    current_question.response_preference = st.session_state[response_preference_key]
+    current_question.response_preference = st.session_state.get(response_preference_key, None)
 
     relevance_preference_key = f'relevance_preference{round_num}_{q + 1}'
-    current_question.relevance_preference_key = st.session_state[relevance_preference_key]
+    current_question.relevance_preference = st.session_state.get(relevance_preference_key, None)
 
     validity_preference_key = f'validity_preference_{round_num}_{q + 1}'
-    current_question.validity_preference = st.session_state[validity_preference_key]
+    current_question.validity_preference = st.session_state.get(validity_preference_key, None)
 
     explainability_preference_key = f'explainability_preference_{round_num}_{q + 1}'
-    current_question.explainability_preference_key = st.session_state[explainability_preference_key]
+    current_question.explainability_preference = st.session_state.get(explainability_preference_key, None)
 
     response_data = {
         'round': round_num,
@@ -84,7 +84,9 @@ def display_sliders_collect_responses(current_question, q, round_num):
         min_value=1, max_value=5, value=3, key=f'explainability_preference_{round_num}_{q + 1}'
     )
 
-    st.button('Submit Response', on_click=submit_button_callback, key=f'submit_{round_num}_{q + 1}')
+    if st.button('Submit Response', key=f'submit_{round_num}_{q + 1}'):
+        submit_button_callback()
+
 
 
 def start_questioning():
