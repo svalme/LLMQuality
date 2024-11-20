@@ -61,7 +61,7 @@ def submit_button_callback():
     st.session_state.placeholder_feedback.empty()
 
 
-def display_question_with_button(question, question_key, round_num, q_index, answers):
+def display_button(question, question_key, round_num, q_index, answers):
 
     if st.button(f"Show GPT 4o Output 1 (Question {q_index + 1})", key=f"output1_button_{round_num}_{q_index}"):
         st.write(answers[q_index][0])
