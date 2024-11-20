@@ -61,6 +61,18 @@ def submit_button_callback():
     st.session_state.placeholder_feedback.empty()
 
 
+def display_question_with_button(question, question_key, round_num, q_index, answers):
+
+    if st.button(f"Show GPT 4o Output 1 (Question {q_index + 1})", key=f"output1_button_{round_num}_{q_index}"):
+        st.write(answers[q_index][0])
+
+    if st.button(f"Show GPT 4o Output 2 (Question {q_index + 1})", key=f"output2_button_{round_num}_{q_index}"):
+        if question_key not in st.session_state['thinking_shown']:
+            show_thinking_animation()
+            st.session_state['thinking_shown'][question_key] = True
+        st.write(answers[q_index][1])
+
+
 def display_sliders_collect_responses(current_question, q, round_num):
     # Collect responses
     st.write("Please provide your responses below:")
@@ -121,6 +133,10 @@ def start_questioning():
 
             st.markdown(f"#### Question {q + 1}")
             # st.write("Question ", q + 1)
+
+
+            display_button(current_question, question_key, round_num, q_index, answers)
+
 
             # st.write(current_question.question)
             display_question(current_question)
