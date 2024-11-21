@@ -1,11 +1,14 @@
 import os
 import csv
 from datetime import datetime
-#import streamlit as st
+import streamlit as st
 import requests
+import random
 
+from dataclasses import dataclass, field
+from typing import Optional, List
 
-def submit_to_google_form(st, data):
+def submit_to_google_form(data):
     """Submit response data to Google Form."""
     # Google Form URL (formResponse endpoint)
     form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdVo6Tw-ahAB3sSPKYH6u75LKmnXgt-3neDDorqM-DIzcBCBw/formResponse"
@@ -131,29 +134,33 @@ answers = {
 }
 
 
-# questions_and_answers = [{"question": questions[i], "answers": answers[i]} for i in range(len(questions))]
-
+@dataclass
 class SliderResponses:
-    def __init__(self):
-        self.relevance_preference = None
-        self.validity_preference = None
-        self.explainability_preference = None
+    relevance_preference: Optional[float] = None
+    validity_preference: Optional[float] = None
+    explainability_preference: Optional[float] = None
 
-
+@dataclass
 class QuestionsAndAnswers:
-    def __init__(self, question, answers_list):
-        self.question = question
-        self.question_key = None
-        self.answers_without_o1 = answers_list[0]
-        self.answers_with_o1 = answers_list[1]
-        self.response_preference = None  # User's preferred answer: with or without o1; without o1: 0, with o1: 1
-        self.sliders = [SliderResponses(), SliderResponses()]
-        self.question_identifier = None # not the index but a numerical value paired with each question
+    question: str
+    answers_without_o1: List[str]
+    answers_with_o1: List[str]
+    question_key: Optional[str] = None
+    response_preference: Optional[int] = None  # 0: without o1, 1: with o1
+    sliders: List[SliderResponses] = field(default_factory=lambda: [SliderResponses(), SliderResponses()])
+    question_identifier: Optional[int] = None
 
 
-questions_and_answers = []
-for i, question_text in enumerate(questions):
-    #answers = answers[i]
-    question_and_answer = QuestionsAndAnswers(question_text, answers[i])
-    questions_and_answers.append(question_and_answer)
-    # st.session_state.questions.append(question)
+questions_and_answers: List[QuestionsAndAnswers] = []
+
+for i, question in enumerate(questions):
+    question_answers = answers[i]
+    qa = QuestionsAndAnswers(
+        question=question,
+        answers_without_o1=question_answers[0],
+        answers_with_o1=question_answers[1]
+    )
+    questions_and_answers.append(qa)
+
+if 'randomized' not in st.session_state:
+    random.shuffle(questions_and_answers)

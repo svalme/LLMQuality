@@ -1,14 +1,13 @@
 # Define your themes
 
 import streamlit as st
-import pick_ui
 
 themes = {
     "current_theme": "light",
     "refreshed": True,
     "light": {
         "theme.base": "dark",
-        "theme.primaryColor": "#F63366",
+        "theme.primaryColor": "#0D0D0D",
         "theme.backgroundColor": "#FFFFFF",
         "theme.secondaryBackgroundColor": "#F0F2F6",
         "theme.textColor": "#0D0D0D",
@@ -64,7 +63,7 @@ def change_theme():
     elif previous_theme == "light":
         st.session_state.themes["current_theme"] = "dark"
         st.session_state.current_theme = st.session_state.themes["current_theme"]
-   # apply_theme_to_question()
+
 
 
 def theme_selection():
