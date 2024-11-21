@@ -131,51 +131,26 @@ def display_sliders_collect_responses(current_question, q, round_num):
 
 
 def start_questioning():
-    # If the survey is started, begin showing questions
     if st.session_state['survey_started']:
         round_num = st.session_state['current_round']
-        q = st.session_state['current_question_within_round']  # 0: with 01, 1: without o1
+        q = st.session_state['current_question_within_round']
         with_or_without_o1 = st.session_state['selected_ui']
 
-        # Create an empty container
-        # placeholder = st.empty()
-
         st.markdown(f"### Round {round_num}")
-        # st.write("Round ", round_num)
 
-        # Calculate question index for current question in the round
         start_index = (round_num - 1) * 2
-        q_index = start_index + q  # The index for the current question
+        q_index = start_index + q
 
-        if q_index < len(questions_and_answers):  # Ensure within bounds
-
+        if q_index < len(questions_and_answers):
             current_question = st.session_state['remaining_questions'][q_index]
-
-            if with_or_without_o1 == 0:
-                question_key = f"round_{round_num}_q_{q}_without_o1"
-            else:  # with_or_without_o1 == 1
-                question_key = f"round_{round_num}_q_{q}_with_o1"
-
+            question_key = f"round_{round_num}_q_{q}_{'with' if with_or_without_o1 else 'without'}_o1"
             current_question.question_key = question_key
 
             st.markdown(f"#### Question {q + 1}")
-            # st.write("Question ", q + 1)
-
-
+            display_question(current_question)
             display_button(current_question, question_key, round_num, q_index, answers)
 
-
-            # st.write(current_question.question)
-            display_question(current_question)
-
-            display_selected_ui(current_question, question_key)
-
-            # st.session_state.show_content = True
-
-            # if 'placeholder_feedback' not in st.session_state:
             st.session_state.placeholder_feedback = st.empty()
-
-            # if st.session_state.show_content:
             with st.session_state.placeholder_feedback.container():
                 display_sliders_collect_responses(current_question, q, round_num)
 
