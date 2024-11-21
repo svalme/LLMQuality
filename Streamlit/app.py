@@ -62,15 +62,42 @@ def submit_button_callback():
 
 
 def display_button(question, question_key, round_num, q_index, answers):
+    # Create columns for buttons
+    col1, col2 = st.columns(2)
+    
+    # Initialize session state for button visibility
+    if f"show_output2_button_{round_num}_{q_index}" not in st.session_state:
+        st.session_state[f"show_output2_button_{round_num}_{q_index}"] = False
+    
+    # Initialize session state for outputs
+    if f"show_output1_{round_num}_{q_index}" not in st.session_state:
+        st.session_state[f"show_output1_{round_num}_{q_index}"] = False
+    if f"show_output2_{round_num}_{q_index}" not in st.session_state:
+        st.session_state[f"show_output2_{round_num}_{q_index}"] = False
 
-    if st.button(f"Show GPT 4o Output 1 (Question {q_index + 1})", key=f"output1_button_{round_num}_{q_index}"):
+    with col1:
+        if st.button(f"Generate First Output (Question {q_index + 1})", key=f"output1_button_{round_num}_{q_index}"):
+            st.session_state[f"show_output1_{round_num}_{q_index}"] = True
+            st.session_state[f"show_output2_button_{round_num}_{q_index}"] = True
+
+    # Display first output if button was clicked
+    if st.session_state[f"show_output1_{round_num}_{q_index}"]:
         st.write(answers[q_index][0])
+        
+        # Show second button after first output is displayed
+        with col2:
+            if st.session_state[f"show_output2_button_{round_num}_{q_index}"]:
+                if st.button(f"Generate Second Output (Question {q_index + 1})", key=f"output2_button_{round_num}_{q_index}"):
+                    # Only show thinking animation if not shown before for this question
+                    if question_key not in st.session_state['thinking_shown']:
+                        show_thinking_animation()
+                        st.session_state['thinking_shown'][question_key] = True
+                    st.session_state[f"show_output2_{round_num}_{q_index}"] = True
 
-    if st.button(f"Show GPT 4o Output 2 (Question {q_index + 1})", key=f"output2_button_{round_num}_{q_index}"):
-        if question_key not in st.session_state['thinking_shown']:
-            show_thinking_animation()
-            st.session_state['thinking_shown'][question_key] = True
+    # Display second output if its button was clicked
+    if st.session_state[f"show_output2_{round_num}_{q_index}"]:
         st.write(answers[q_index][1])
+
 
 
 def display_sliders_collect_responses(current_question, q, round_num):
