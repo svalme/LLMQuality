@@ -13,7 +13,7 @@ themes = {
     "refreshed": True,
     "light": {
         "theme.base": "dark",
-        "theme.primaryColor": "#0096FF",
+        "theme.primaryColor": "#000000",
         "theme.backgroundColor": "#FFFFFF",
         "theme.secondaryBackgroundColor": "#F0F2F6",
         "theme.textColor": "#0D0D0D",
