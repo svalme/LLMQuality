@@ -68,16 +68,11 @@ def display_ui_with_o1(current_question):
     response_text_update(current_question.answers_with_o1)
 
 
-def display_selected_ui(current_question):
-    # display selected ui: a ui with or without thinking
+def display_selected_ui(current_question, question_key):
     if not st.session_state['first_answer_ui_chosen']:
         pick_ui()
 
-    if st.session_state.selected_ui == 0:
-        display_ui_without_o1(current_question)
-    elif st.session_state.selected_ui == 1:
-        display_ui_with_o1(current_question)
-
+    # Remove the automatic display of outputs
     if st.session_state['first_answer_ui_chosen']:
         st.session_state['first_answer_ui_chosen'] = False
 

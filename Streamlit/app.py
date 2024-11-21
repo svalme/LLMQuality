@@ -18,6 +18,45 @@ NUM_ROUNDS = 3
 
 logging.basicConfig(level=logging.DEBUG)
 
+def display_button(question, question_key, round_num, q_index, answers):
+    # Create columns for buttons
+    col1, col2 = st.columns(2)
+    
+    # Initialize session state for button visibility
+    if f"show_output2_button_{round_num}_{q_index}" not in st.session_state:
+        st.session_state[f"show_output2_button_{round_num}_{q_index}"] = False
+    
+    # Initialize session state for outputs
+    if f"show_output1_{round_num}_{q_index}" not in st.session_state:
+        st.session_state[f"show_output1_{round_num}_{q_index}"] = False
+    if f"show_output2_{round_num}_{q_index}" not in st.session_state:
+        st.session_state[f"show_output2_{round_num}_{q_index}"] = False
+
+    with col1:
+        if st.button(f"Generate First Output (Question {q_index + 1})", key=f"output1_button_{round_num}_{q_index}"):
+            st.session_state[f"show_output1_{round_num}_{q_index}"] = True
+            st.session_state[f"show_output2_button_{round_num}_{q_index}"] = True
+
+    # Display first output if button was clicked
+    if st.session_state[f"show_output1_{round_num}_{q_index}"]:
+        st.write(answers[q_index][0])
+        
+        # Show second button after first output is displayed
+        with col2:
+            if st.session_state[f"show_output2_button_{round_num}_{q_index}"]:
+                if st.button(f"Generate Second Output (Question {q_index + 1})", key=f"output2_button_{round_num}_{q_index}"):
+                    # Only show thinking animation if not shown before for this question
+                    if question_key not in st.session_state['thinking_shown']:
+                        show_thinking_animation()
+                        st.session_state['thinking_shown'][question_key] = True
+                    st.session_state[f"show_output2_{round_num}_{q_index}"] = True
+
+    # Display second output if its button was clicked
+    if st.session_state[f"show_output2_{round_num}_{q_index}"]:
+        st.write(answers[q_index][1])
+
+
+
 def display_sliders_collect_responses(current_question, q, round_num):
     # if st.session_state.clear_flag:
     # st.session_state.placeholder_feedback.empty()  # Clear the container
@@ -46,146 +85,30 @@ def display_sliders_collect_responses(current_question, q, round_num):
         logging.info(f"current_question.sliders[q].relevance_preference: {current_question.sliders[q].relevance_preference}")
 
 
-        validity_label = f"Validity (1=Greater validity in first response, 5=Greater validity in second response)"
-        validity_preference_key = 'validity_preference_{round_num}_{q + 1}'
-        validity_preference = st.slider(validity_label, min_value=1, max_value=5, value=3, key=validity_preference_key)
-        current_question.sliders[q].validity_preference = validity_preference
-
-        logging.info(f"current_question.sliders[q].validity_preference: {current_question.sliders[q].validity_preference}")
-
-
-        explainability_preference = f"Explainability (1=Greater explainability in first response, 5=Greater explainability in second response)"
-        explainability_preference_key = 'explainability_preference_{round_num}_{q + 1}'
-        explainability_preference = st.slider(explainability_preference, min_value=1, max_value=5, value=3, key=explainability_preference_key)
-        current_question.sliders[q].explainability_preference = explainability_preference
-
-        logging.info(f"current_question.sliders[q].validity_preference: {current_question.sliders[q].explainability_preference}")
-
-
-        submit_button_key=f'submit_{round_num}_{q + 1}'
-        st.button("Submit Response", key=submit_button_key, on_click=submit_button_callback)
-
-
-def display_second_answer():
-    #with st.container():
-    with st.session_state.placeholder_second_answer.container():
-        #with st.container():
+def start_questioning():
+    if st.session_state['survey_started']:
         round_num = st.session_state['current_round']
-        q = st.session_state['current_question_within_round']  # 0: question #1, 1: question #2
+        q = st.session_state['current_question_within_round']
         with_or_without_o1 = st.session_state['selected_ui']
-
-        # Create an empty container
-        # placeholder = st.empty()
-
-        # Calculate question index for current question in the round
-        start_index = (round_num - 1) * 2
-        q_index = start_index + q  # The index for the current question
-        current_question = st.session_state['remaining_questions'][q_index]
-
-    with st.container():
-        display_selected_ui(current_question)
-
-
-def display_first_answer():
-    #with st.session_state.placeholder_first_answer.container():
-
-    st.session_state.get('placeholder', st.empty()).empty()
-
-    empty_space = st.empty()
-
-    #with empty_space.container():
-
-    with st.session_state.placeholder_first_answer.container():
-        round_num = st.session_state['current_round']
-        q = st.session_state['current_question_within_round']  # 0: question #1, 1: question #2
-
-        if q not in [0, 1]:
-            st.error(f"Invalid question index: {q}. Resetting to 0.")
-            st.session_state['current_question_within_round'] = 0
-            q = 0
-
-
-        with_or_without_o1 = st.session_state['selected_ui']
-
-        # Create an empty container
-        # placeholder = st.empty()
-
-        # Calculate question index for current question in the round
-        start_index = (round_num - 1) * 2
-        q_index = start_index + q  # The index for the current question
-
-        if q_index < len(st.session_state['remaining_questions']):
-            current_question = st.session_state['remaining_questions'][q_index]
-            display_selected_ui(current_question)
-        else:
-            st.error(f"Question index {q_index} is out of range.")
-
-        # question_key = f"round_{round_num}_q_{q}_without_o1"
-   # st.session_state.get('placeholder', st.empty()).empty()
-    #with st.container():
-        #display_selected_ui(current_question)
-
-       # with st.status("Processing data...", expanded=True) as status:
-       #     st.write("Starting the process...")
-       #     progress_bar = st.progress(0)
-
-        #    for i in range(100):
-        #        time.sleep(0.1)  # Simulating some work being done
-        #        progress_bar.progress(i + 1)
-        #        if i == 50:
-        #            status.update(label="Halfway there!", state="running")
-
-        #    status.update(label="Process complete!", state="complete")
-
-        # st.session_state.show_content = True
-
-        # if 'placeholder_feedback' not in st.session_state:
-        #     st.session_state.placeholder_feedback = st.empty()
-        # st.session_state.placeholder_feedback = st.empty()
-
-        # if st.session_state.show_content:
-        # with st.session_state.placeholder_feedback.container():
-        # display_sliders_collect_responses(current_question, q, round_num)
-
-
-def display_question():
-    # If the survey is started, begin showing questions
-    #with st.session_state.placeholder_question.container():
-
-    with st.container():
-
-    #with st.session_state.placeholder_question.container():
-        round_num = st.session_state['current_round']
-        q = st.session_state['current_question_within_round']  # 0: question #1, 1: question #2
-        with_or_without_o1 = st.session_state['selected_ui']
-
-        # Create an empty container
-        # placeholder = st.empty()
 
         st.markdown(f"### Round {round_num}")
-        # st.write("Round ", round_num)
 
-        # Calculate question index for current question in the round
         start_index = (round_num - 1) * 2
-        q_index = start_index + q  # The index for the current question
+        q_index = start_index + q
 
-        if q_index < len(questions_and_answers):  # Ensure within bounds
-
+        if q_index < len(questions_and_answers):
             current_question = st.session_state['remaining_questions'][q_index]
-            st.session_state.current_question = st.session_state['remaining_questions'][q_index]
 
-            if with_or_without_o1 == 0:
-                question_key = f"round_{round_num}_q_{q}_without_o1"
-            else:  # with_or_without_o1 == 1
-                question_key = f"round_{round_num}_q_{q}_with_o1"
-
+            question_key = f"round_{round_num}_q_{q}_{'with' if with_or_without_o1 else 'without'}_o1"
             current_question.question_key = question_key
 
             st.markdown(f"#### Question {q + 1}")
-            # st.write("Question ", q + 1)
+            display_question(current_question)
+            display_button(current_question, question_key, round_num, q_index, answers)
 
-            # st.write(current_question.question)
-            display_question_ui(current_question)
+            st.session_state.placeholder_feedback = st.empty()
+            with st.session_state.placeholder_feedback.container():
+                display_sliders_collect_responses(current_question, q, round_num)
 
 
 def ending_statement(placeholder):
