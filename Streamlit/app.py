@@ -13,7 +13,7 @@ themes = {
     "refreshed": True,
     "light": {
         "theme.base": "dark",
-        "theme.primaryColor": "#F63366",
+        "theme.primaryColor": "#0096FF",
         "theme.backgroundColor": "#FFFFFF",
         "theme.secondaryBackgroundColor": "#F0F2F6",
         "theme.textColor": "#0D0D0D",
@@ -147,14 +147,14 @@ def show_thinking_animation():
 
 
 def submit_to_google_form(st, data):
-    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdVo6Tw-ahAB3sSPKYH6u75LKmnXgt-3neDDorqM-DIzcBCBw/formResponse"
+    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSfNfbHurMIpnRZE4YcPBTE27XUyMv7HJnW1JT-ikujAPIVp9g/formResponse"
     form_data = {
-        'entry.132741864': data['round'],
-        'entry.1766629492': data['question'],
-        'entry.1357460269': data['preference'],
-        'entry.312523467': data['relevance_preference'],
-        'entry.1624496186': data['validity_preference'],
-        'entry.652819736': data['explainability_preference'],
+        'entry.117239958': data['round'],
+        'entry.556492741': data['question'],
+        'entry.1107608590': data['preference'],
+        'entry.1327267302': data['relevance_preference'],
+        'entry.1271752541': data['validity_preference'],
+        'entry.1875781565': data['explainability_preference'],
     }
     try:
         response = requests.post(form_url, data=form_data)
