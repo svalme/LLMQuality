@@ -73,12 +73,14 @@ answers = {
 NUM_ROUNDS = 3
 UI_OPTIONS = [0, 1]
 
+
 # Classes
 class SliderResponses:
     def __init__(self):
         self.relevance_preference = None
         self.validity_preference = None
         self.explainability_preference = None
+
 
 class QuestionsAndAnswers:
     def __init__(self, question, answers_list):
@@ -90,10 +92,12 @@ class QuestionsAndAnswers:
         self.sliders = [SliderResponses(), SliderResponses()]
         self.question_identifier = None
 
+
 # Helper Functions
 def change_theme():
     previous_theme = st.session_state.themes["current_theme"]
-    tdict = st.session_state.themes["light"] if st.session_state.themes["current_theme"] == "light" else st.session_state.themes["dark"]
+    tdict = st.session_state.themes["light"] if st.session_state.themes["current_theme"] == "light" else \
+    st.session_state.themes["dark"]
     for vkey, vval in tdict.items():
         if vkey.startswith("theme"):
             st._config.set_option(vkey, vval)
@@ -101,12 +105,15 @@ def change_theme():
     st.session_state.themes["current_theme"] = "light" if previous_theme == "dark" else "dark"
     st.session_state.current_theme = st.session_state.themes["current_theme"]
 
+
 def theme_selection():
-    btn_face = st.session_state.themes["light" if st.session_state.themes["current_theme"] == "light" else "dark"]["button_face"]
+    btn_face = st.session_state.themes["light" if st.session_state.themes["current_theme"] == "light" else "dark"][
+        "button_face"]
     st.button(btn_face, on_click=change_theme)
     if not st.session_state.themes["refreshed"]:
         st.session_state.themes["refreshed"] = True
         st.rerun()
+
 
 def initialize_theme():
     current_theme = st.session_state.themes["current_theme"]
@@ -114,6 +121,7 @@ def initialize_theme():
     for vkey, vval in theme_dict.items():
         if vkey.startswith("theme"):
             st._config.set_option(vkey, vval)
+
 
 def apply_theme_to_question():
     current_theme = themes[st.session_state.current_theme]
@@ -128,6 +136,7 @@ def apply_theme_to_question():
         </style>
     """, unsafe_allow_html=True)
 
+
 def show_thinking_animation():
     st.write("Generating Output: Thinking...")
     my_bar = st.progress(0)
@@ -135,6 +144,7 @@ def show_thinking_animation():
         time.sleep(0.15)
         my_bar.progress(percent_complete + 1)
     st.write("Done!")
+
 
 def submit_to_google_form(st, data):
     form_url = "https://docs.google.com/forms/d/e/1FAIpQLSfNfbHurMIpnRZE4YcPBTE27XUyMv7HJnW1JT-ikujAPIVp9g/formResponse"
@@ -157,14 +167,19 @@ def submit_to_google_form(st, data):
         st.error(f"Error submitting response: {e}")
         save_response_locally(data)
 
+
 def save_response_locally(data):
     filename = 'responses.csv'
     exists = os.path.exists(filename)
     with open(filename, 'a', newline='') as f:
         writer = csv.writer(f)
         if not exists:
-            writer.writerow(['Timestamp', 'Round', 'Question', 'Preference', 'Relevance Preference', 'Validity Preference', 'Explainability Preference'])
-        writer.writerow([datetime.now(), data['round'], data['question'], data['preference'], data['relevance_preference'], data['validity_preference'], data['explainability_preference']])
+            writer.writerow(
+                ['Timestamp', 'Round', 'Question', 'Preference', 'Relevance Preference', 'Validity Preference',
+                 'Explainability Preference'])
+        writer.writerow(
+            [datetime.now(), data['round'], data['question'], data['preference'], data['relevance_preference'],
+             data['validity_preference'], data['explainability_preference']])
 
 
 def display_button(question, question_key, round_num, q_index, answers):
@@ -213,13 +228,14 @@ def display_question(current_question):
     apply_theme_to_question()
     st.markdown(f'<div class="my-container">{current_question.question}</div>', unsafe_allow_html=True)
 
+
 def display_sliders_collect_responses(current_question, q, round_num):
     st.write("Please provide your responses below:")
-    
+
     current_question.response_preference = st.radio(
         f"Round {round_num} Question {q + 1} Preference",
         options=['1', '2'],
-        index=None, 
+        index=None,
         key=f'response_preference_{round_num}_{q + 1}'
     )
 
@@ -254,6 +270,7 @@ def display_sliders_collect_responses(current_question, q, round_num):
     )
     st.button("Submit Response", key=f'submit_{round_num}_{q + 1}', on_click=submit_button_callback)
 
+
 def validate_responses(round_num, q):
     """
     Validates that the user has provided all required responses (preferences and Likert scales).
@@ -270,7 +287,8 @@ def validate_responses(round_num, q):
         st.session_state.get(validity_preference_key) is not None,
         st.session_state.get(explainability_preference_key) is not None
     ])
-    
+
+
 def submit_button_callback():
     q = st.session_state['current_question_within_round']
     round_num = st.session_state['current_round']
@@ -317,6 +335,7 @@ def submit_button_callback():
     st.session_state.placeholder_feedback.empty()
     st.success("Response submitted successfully. Moving to the next question.")
 
+
 def start_questioning():
     if st.session_state['survey_started']:
         round_num = st.session_state['current_round']
@@ -338,9 +357,9 @@ def start_questioning():
             display_button(current_question, question_key, round_num, q_index, answers)
 
             # Prevent sliders and next question from appearing until both outputs are shown
-            if (st.session_state[f"show_output1_{round_num}_{q_index}"] and 
-                st.session_state[f"show_output2_{round_num}_{q_index}"]):
-                
+            if (st.session_state[f"show_output1_{round_num}_{q_index}"] and
+                    st.session_state[f"show_output2_{round_num}_{q_index}"]):
+
                 st.session_state.placeholder_feedback = st.empty()
                 with st.session_state.placeholder_feedback.container():
                     display_sliders_collect_responses(current_question, q, round_num)
@@ -348,35 +367,31 @@ def start_questioning():
                 st.warning("Please generate both outputs before proceeding.")
 
 
+def survey_started_callback():
+    st.session_state.survey_started = True
+
 
 def intro_statement():
     st.header('CS 197 Project :computer:', divider='blue')
     st.subheader(':green[Introduction]')
-    st.write("This study explores whether user perception of AI responses changes when responses include language suggesting that the AI 'thought' about the answer. Please read both AI responses and answer the questions accordingly. :sunglasses::sunglasses:")
+    st.write(
+        "This study explores whether user perception of AI responses changes when responses include language suggesting that the AI 'thought' about the answer. Please read both AI responses and answer the questions accordingly. :sunglasses::sunglasses:")
 
     theme_selection()
 
-    if not st.session_state['preliminaries_done']:
-        if st.button('Ready to start?'):
-            st.session_state['preliminaries_done'] = True
-            st.success('Ready to commence.')
-            st.session_state['refresh_key'] = not st.session_state.get('refresh_key', False)
-
-    elif not st.session_state['survey_started']:
-        if st.button('Double Click here to start survey'):
-            st.session_state['survey_started'] = True
-            st.session_state['refresh_key'] = not st.session_state['refresh_key']
-
+    if not st.session_state['survey_started']:
+        st.button('Ready to start?', on_click=survey_started_callback)
     else:
         st.subheader(":red[Welcome to the Research Study]")
         st.write(f"You will be presented with {NUM_ROUNDS} rounds of questions.")
         st.write("Each round will show you 2 different questions with corresponding answers.")
-        
+
         start_questioning()
 
         if st.session_state['current_round'] > NUM_ROUNDS:
             st.success("Thank you for participating in the study!")
             st.write("You can now close this tab.")
+
 
 def main():
     st.set_page_config(page_title="O1 Study", page_icon="🎨")
@@ -402,7 +417,8 @@ def main():
         'preliminaries_done': False,
         'survey_started': False,
         'thinking_shown': {},
-        'remaining_questions': random.sample(st.session_state['questions_and_answers'], len(st.session_state['questions_and_answers'])),
+        'remaining_questions': random.sample(st.session_state['questions_and_answers'],
+                                             len(st.session_state['questions_and_answers'])),
         'current_round': 1,
         'current_question_within_round': 0,
         'selected_ui': random.choice([0, 1]),
@@ -438,12 +454,14 @@ def pick_ui():
         st.session_state.unused_ui = UI_OPTIONS.copy()
         pick_ui()
 
+
 def display_selected_ui(current_question, question_key):
     if not st.session_state['first_answer_ui_chosen']:
         pick_ui()
 
     if st.session_state['first_answer_ui_chosen']:
         st.session_state['first_answer_ui_chosen'] = False
+
 
 if __name__ == '__main__':
     main()
