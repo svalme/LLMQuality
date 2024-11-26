@@ -34,14 +34,19 @@ themes = {
 # Questions and Answers Data
 questions = [
     "Laird: Pure research provides us with new technologies that contribute to saving lives. Even more worthwhile than this, however, is its role in expanding our knowledge and providing new, unexplored ideas. Kim: Your priorities are mistaken. Saving lives is what counts most of all. Without pure research, medicine would not be as advanced as it is. Laird and Kim disagree on whether pure research: (A) derives its significance from new technologies, (B) expands our knowledge of medicine, (C) should prioritize saving lives, (D) has its value in medical applications, or (E) has value only in providing technologies to save lives?",
+
     "Executive: We recently ran a set of advertisements in a travel magazine and on its website. We were unable to get direct information about consumer response to the print ads. However, we found that consumer response to the website ads was much more limited than typical. We concluded that consumer response to the print ads was probably below par. The executive’s reasoning does which one of the following? (A) base a prediction on information about intensity of a phenomenon’s cause, (B) use typical frequency to draw conclusions about a particular event, (C) infer a statistical generalization from specific instances, (D) use a case with direct evidence to draw conclusions about an analogous case, or (E) base a prediction on facts about recent comparable events?",
+
     "During the construction of the Quebec Bridge in 1907, designer Theodore Cooper learned of a downward deflection of the span. Before he could act, the cantilever arm broke, causing the worst construction disaster in history. The inquiry that followed changed the engineering rules of thumb used worldwide. Which one of the following can be inferred from the passage? (A) Bridges built before 1907 were unsafe due to lack of analysis, (B) Cooper’s absence caused the cantilever to break, (C) Engineers relied on rules of thumb due to inadequate methods, (D) Only rigorous analysis could have prevented the collapse, or (E) Prior to 1907, mathematical analysis was insufficient for safety.",
+
     "The supernova event of 1987 is notable for the absence of the neutron star that should have remained after such an explosion, despite extensive searches for its radiation. Thus, current theory claiming that certain supernovas always produce neutron stars is likely incorrect. Which one of the following strengthens the argument? (A) Most detected remnants have a nearby neutron star, (B) Neutron stars have been found farther away than the 1987 location, (C) The 1987 supernova was the first observed in progress, (D) Several features of the supernova match current theory, or (E) Some neutron stars arise from causes other than supernovae.",
+
     "Political scientist: Democracy does not promote political freedom; historical examples show democracies can lead to oppression, while some despotisms provide freedom. The reasoning is flawed because it (A) confuses necessary with sufficient conditions for freedom, (B) fails to consider that increased freedom might lead to more democracy, (C) appeals to irrelevant historical examples, (D) overlooks that democracy can promote freedom without being necessary or sufficient, or (E) bases its case on a personal viewpoint.",
+
     "Journalist: To balance the need for profits to support drug research with the moral imperative to provide medicines to those in need, some pharmaceutical companies sell drugs at high prices in rich nations and lower prices in poor ones. This practice is unjustified. Which principle most helps to justify the journalist’s reasoning? (A) The ill deserve more consideration than the healthy, (B) Wealthy institutions must use resources to assist the incapable, (C) Special consideration depends on needs rather than societal characteristics, (D) People in wealthy nations shouldn't have better healthcare than those in poorer nations, or (E) Unequal access to healthcare is more unfair than unequal wealth distribution.",
 ]
 
-# Define answers (GPT 4o)
+# Define answers (Each question has two answer options)
 answers = {
     0: [
         "Laird and Kim have contrasting views on the value of pure research, with Laird focusing on the intrinsic worth of expanding knowledge and sparking new ideas, while Kim prioritizes its life-saving applications. Laird argues that pure research should not be confined to practical applications but valued for fostering intellectual growth. Kim, on the other hand, sees the life-saving potential of pure research as the most significant aspect. The correct answer is (C), as their disagreement fundamentally revolves around whether pure research should prioritize saving lives over advancing knowledge for its own sake.",
@@ -73,14 +78,12 @@ answers = {
 NUM_ROUNDS = 3
 UI_OPTIONS = [0, 1]
 
-
 # Classes
 class SliderResponses:
     def __init__(self):
         self.relevance_preference = None
         self.validity_preference = None
         self.explainability_preference = None
-
 
 class QuestionsAndAnswers:
     def __init__(self, question, answers_list):
@@ -92,12 +95,11 @@ class QuestionsAndAnswers:
         self.sliders = [SliderResponses(), SliderResponses()]
         self.question_identifier = None
 
-
 # Helper Functions
 def change_theme():
     previous_theme = st.session_state.themes["current_theme"]
     tdict = st.session_state.themes["light"] if st.session_state.themes["current_theme"] == "light" else \
-    st.session_state.themes["dark"]
+        st.session_state.themes["dark"]
     for vkey, vval in tdict.items():
         if vkey.startswith("theme"):
             st._config.set_option(vkey, vval)
@@ -105,15 +107,13 @@ def change_theme():
     st.session_state.themes["current_theme"] = "light" if previous_theme == "dark" else "dark"
     st.session_state.current_theme = st.session_state.themes["current_theme"]
 
-
 def theme_selection():
     btn_face = st.session_state.themes["light" if st.session_state.themes["current_theme"] == "light" else "dark"][
         "button_face"]
     st.button(btn_face, on_click=change_theme)
     if not st.session_state.themes["refreshed"]:
         st.session_state.themes["refreshed"] = True
-        st.rerun()
-
+        st.experimental_rerun()
 
 def initialize_theme():
     current_theme = st.session_state.themes["current_theme"]
@@ -121,7 +121,6 @@ def initialize_theme():
     for vkey, vval in theme_dict.items():
         if vkey.startswith("theme"):
             st._config.set_option(vkey, vval)
-
 
 def apply_theme_to_question():
     current_theme = themes[st.session_state.current_theme]
@@ -136,15 +135,13 @@ def apply_theme_to_question():
         </style>
     """, unsafe_allow_html=True)
 
-
 def show_thinking_animation():
     st.write("Generating Output: Thinking...")
     my_bar = st.progress(0)
     for percent_complete in range(100):
-        time.sleep(0.15)
+        time.sleep(0.12)  # Reduced sleep time for smoother progress
         my_bar.progress(percent_complete + 1)
     st.write("Done!")
-
 
 def submit_to_google_form(st, data):
     form_url = "https://docs.google.com/forms/d/e/1FAIpQLSfNfbHurMIpnRZE4YcPBTE27XUyMv7HJnW1JT-ikujAPIVp9g/formResponse"
@@ -167,7 +164,6 @@ def submit_to_google_form(st, data):
         st.error(f"Error submitting response: {e}")
         save_response_locally(data)
 
-
 def save_response_locally(data):
     filename = 'responses.csv'
     exists = os.path.exists(filename)
@@ -181,8 +177,7 @@ def save_response_locally(data):
             [datetime.now(), data['round'], data['question'], data['preference'], data['relevance_preference'],
              data['validity_preference'], data['explainability_preference']])
 
-
-def display_button(question, question_key, round_num, q_index, answers):
+def display_button(current_question, question_key, round_num, q_index):
     # Initialize session states
     if f"show_output2_button_{round_num}_{q_index}" not in st.session_state:
         st.session_state[f"show_output2_button_{round_num}_{q_index}"] = False
@@ -198,8 +193,7 @@ def display_button(question, question_key, round_num, q_index, answers):
 
     # First button for Output 1
     if st.button(f"Generate 1st Output", key=f"output1_button_{round_num}_{q_index}"):
-        if st.session_state[f"thinking_output_{round_num}_{q_index}"] == 1 and question_key not in st.session_state[
-            'thinking_shown']:
+        if st.session_state[f"thinking_output_{round_num}_{q_index}"] == 1 and question_key not in st.session_state['thinking_shown']:
             show_thinking_animation()
             st.session_state['thinking_shown'][question_key] = True
         st.session_state[f"show_output1_{round_num}_{q_index}"] = True
@@ -207,27 +201,32 @@ def display_button(question, question_key, round_num, q_index, answers):
 
     # Display Output 1 if generated
     if st.session_state[f"show_output1_{round_num}_{q_index}"]:
-        st.write(f"**Output 1:** {answers[q_index][0]}")
+        st.write(f"**Output 1:** {current_question.answers_without_o1}")
 
         # Second button for Output 2
         if st.session_state[f"show_output2_button_{round_num}_{q_index}"]:
-            if st.button(f"Generate 2nd Output",
-                         key=f"output2_button_{round_num}_{q_index}"):
-                if st.session_state[f"thinking_output_{round_num}_{q_index}"] == 2 and question_key not in \
-                        st.session_state['thinking_shown']:
+            if st.button(f"Generate 2nd Output", key=f"output2_button_{round_num}_{q_index}"):
+                if st.session_state[f"thinking_output_{round_num}_{q_index}"] == 2 and question_key not in st.session_state['thinking_shown']:
                     show_thinking_animation()
                     st.session_state['thinking_shown'][question_key] = True
                 st.session_state[f"show_output2_{round_num}_{q_index}"] = True
 
     # Display Output 2 if generated
     if st.session_state[f"show_output2_{round_num}_{q_index}"]:
-        st.write(f"**Output 2:** {answers[q_index][1]}")
+        st.write(f"**Output 2:** {current_question.answers_with_o1}")
 
+    # Add the "Click to see the questions" button after both outputs are generated
+    if st.session_state[f"show_output1_{round_num}_{q_index}"] and st.session_state[f"show_output2_{round_num}_{q_index}"]:
+        if f"show_questions_button_{round_num}_{q_index}" not in st.session_state:
+            st.session_state[f"show_questions_button_{round_num}_{q_index}"] = False
+
+        if not st.session_state[f"show_questions_button_{round_num}_{q_index}"]:
+            if st.button("Click to see the questions", key=f"show_questions_button_key_{round_num}_{q_index}"):
+                st.session_state[f"show_questions_button_{round_num}_{q_index}"] = True
 
 def display_question(current_question):
     apply_theme_to_question()
     st.markdown(f'<div class="my-container">{current_question.question}</div>', unsafe_allow_html=True)
-
 
 def display_sliders_collect_responses(current_question, q, round_num):
     st.write("Please provide your responses below:")
@@ -244,8 +243,8 @@ def display_sliders_collect_responses(current_question, q, round_num):
     current_question.sliders[q].relevance_preference = st.radio(
         "",
         options=[1, 2, 3, 4, 5],
-        index=None,  # No pre-filled selection
-        horizontal=True,  # Horizontal layout
+        index=None, # No pre-filled selection
+        horizontal=True, # Horizontal layout
         key=f'relevance_preference_{round_num}_{q + 1}'
     )
 
@@ -254,8 +253,8 @@ def display_sliders_collect_responses(current_question, q, round_num):
     current_question.sliders[q].validity_preference = st.radio(
         "",
         options=[1, 2, 3, 4, 5],
-        index=None,  # No pre-filled selection
-        horizontal=True,  # Horizontal layout
+        index=None, # No pre-filled selection
+        horizontal=True, # Horizontal layout
         key=f'validity_preference_{round_num}_{q + 1}'
     )
 
@@ -264,12 +263,11 @@ def display_sliders_collect_responses(current_question, q, round_num):
     current_question.sliders[q].explainability_preference = st.radio(
         "",
         options=[1, 2, 3, 4, 5],
-        index=None,  # No pre-filled selection
-        horizontal=True,  # Horizontal layout
+        index=None, # No pre-filled selection
+        horizontal=True, # Horizontal layout
         key=f'explainability_preference_{round_num}_{q + 1}'
     )
     st.button("Submit Response", key=f'submit_{round_num}_{q + 1}', on_click=submit_button_callback)
-
 
 def validate_responses(round_num, q):
     """
@@ -288,15 +286,19 @@ def validate_responses(round_num, q):
         st.session_state.get(explainability_preference_key) is not None
     ])
 
-
 def submit_button_callback():
     q = st.session_state['current_question_within_round']
     round_num = st.session_state['current_round']
     current_question = st.session_state['current_question']
 
+    # Initialize the warning placeholder if not already
+    if f"warning_placeholder_{round_num}_{q}" not in st.session_state:
+        st.session_state[f"warning_placeholder_{round_num}_{q}"] = st.empty()
+
     # Validate responses before submitting
     if not validate_responses(round_num, q):
-        st.warning("Please complete all responses before moving on to the next question.")
+        # Display warning at the bottom using the placeholder
+        st.session_state[f"warning_placeholder_{round_num}_{q}"].warning("Please complete all responses before moving on to the next question.")
         return
 
     # Store responses if validation passes
@@ -333,8 +335,7 @@ def submit_button_callback():
         st.session_state['current_question_within_round'] = 1
 
     st.session_state.placeholder_feedback.empty()
-    st.success("Response submitted successfully. Moving to the next question.")
-
+    st.success("Moving to the next question.")
 
 def start_questioning():
     if st.session_state['survey_started']:
@@ -354,25 +355,28 @@ def start_questioning():
 
             st.markdown(f"#### Question {q + 1}")
             display_question(current_question)
-            display_button(current_question, question_key, round_num, q_index, answers)
+            display_button(current_question, question_key, round_num, q_index)
 
-            # Prevent sliders and next question from appearing until both outputs are shown
-            if (st.session_state[f"show_output1_{round_num}_{q_index}"] and
-                    st.session_state[f"show_output2_{round_num}_{q_index}"]):
+            # Check if the "Click to see the questions" button has been clicked
+            show_questions_button_key = f"show_questions_button_{round_num}_{q_index}"
+            show_questions = st.session_state.get(show_questions_button_key, False)
 
-                st.session_state.placeholder_feedback = st.empty()
+            if show_questions:
+                if 'placeholder_feedback' not in st.session_state:
+                    st.session_state.placeholder_feedback = st.empty()
+
                 with st.session_state.placeholder_feedback.container():
                     display_sliders_collect_responses(current_question, q, round_num)
             else:
-                st.warning("Please generate both outputs before proceeding.")
-
+                # If the button has not been clicked yet, prompt the user to generate outputs
+                if st.session_state[f"show_output1_{round_num}_{q_index}"] and st.session_state[f"show_output2_{round_num}_{q_index}"]:
+                    st.info("After reading both ouptuts, please click the 'Click to see the questions' button to proceed.")
 
 def survey_started_callback():
     st.session_state.survey_started = True
 
-
 def intro_statement():
-    st.header('CS 197 Project :computer:', divider='blue')
+    st.header('CS 197 Project :computer:')
     st.subheader(':green[Introduction]')
     st.write(
         "This study explores whether user perception of AI responses changes when responses include language suggesting that the AI 'thought' about the answer. Please read both AI responses and answer the questions accordingly. :sunglasses::sunglasses:")
@@ -391,7 +395,6 @@ def intro_statement():
         if st.session_state['current_round'] > NUM_ROUNDS:
             st.success("Thank you for participating in the study!")
             st.write("You can now close this tab.")
-
 
 def main():
     st.set_page_config(page_title="O1 Study", page_icon="🎨")
@@ -421,7 +424,7 @@ def main():
                                              len(st.session_state['questions_and_answers'])),
         'current_round': 1,
         'current_question_within_round': 0,
-        'selected_ui': random.choice([0, 1]),
+        'selected_ui': random.choice(UI_OPTIONS),
         'responses': [],
         'show_content': True,
         'stage': 0
@@ -439,7 +442,6 @@ def main():
 
     intro_statement()
 
-
 def pick_ui():
     if "unused_ui" not in st.session_state:
         st.session_state.unused_ui = UI_OPTIONS.copy()
@@ -454,14 +456,12 @@ def pick_ui():
         st.session_state.unused_ui = UI_OPTIONS.copy()
         pick_ui()
 
-
 def display_selected_ui(current_question, question_key):
     if not st.session_state['first_answer_ui_chosen']:
         pick_ui()
 
     if st.session_state['first_answer_ui_chosen']:
         st.session_state['first_answer_ui_chosen'] = False
-
 
 if __name__ == '__main__':
     main()
