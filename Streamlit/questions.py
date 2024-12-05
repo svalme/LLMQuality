@@ -17,16 +17,16 @@ def submit_to_google_form(data):
         'entry.1271752541': data['validity_preference'],
         'entry.1875781565': data['explainability_preference'],
     }
-    try:
-        response = requests.post(form_url, data=form_data)
-        if response.status_code == 200:
-            st.success("Response submitted successfully!")
-        else:
-            st.error(f"Error submitting response. Status code: {response.status_code}")
-            save_response_locally(data)
-    except Exception as e:
-        st.error(f"Error submitting response: {e}")
-        save_response_locally(data)
+ #   try:
+ #       response = requests.post(form_url, data=form_data)
+ #       if response.status_code == 200:
+ #           st.success("Response submitted successfully!")
+ #       else:
+ #           st.error(f"Error submitting response. Status code: {response.status_code}")
+ #           save_response_locally(data)
+ #   except Exception as e:
+ #       st.error(f"Error submitting response: {e}")
+ #       save_response_locally(data)
 
 def save_response_locally(data):
     filename = 'responses.csv'
@@ -82,7 +82,7 @@ answers = {
     5: [
         "The journalist critiques the practice of pharmaceutical companies setting high drug prices in wealthy nations and lower prices in poor ones, implying that equal access to healthcare should be the priority. This argument relies on a principle that those in need should receive priority consideration regardless of their country’s economic status. The answer is (A), as it aligns with the journalist’s perspective that moral obligations should focus on those in the greatest need, rather than differentiating based on wealth.",
         "The journalist critiques the pharmaceutical pricing model, arguing it is unjust for companies to charge higher prices in wealthier countries and lower prices in poorer ones, hinting at a moral imperative for equitable access. The argument hinges on the principle that those in greater need should receive more consideration, regardless of their country’s wealth. This aligns with (A), as it suggests that moral obligations should prioritize those in need rather than making distinctions based on economic status.",
-    ],
+    ]
 }
 
 

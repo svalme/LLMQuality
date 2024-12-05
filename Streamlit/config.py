@@ -47,7 +47,7 @@ def theme_selection():
     st.button(btn_face, on_click=change_theme)
     if not st.session_state.themes["refreshed"]:
         st.session_state.themes["refreshed"] = True
-        st.experimental_rerun()
+        st.rerun()
 
 def initialize_theme():
     current_theme = st.session_state.themes["current_theme"]

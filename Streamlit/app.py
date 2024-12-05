@@ -41,13 +41,13 @@ def start_questioning():
                 if 'placeholder_feedback' not in st.session_state:
                     st.session_state.placeholder_feedback = st.empty()
 
-                st.session_state.placeholder_feedback.empty()
+                #st.session_state.placeholder_feedback.empty()
                 with st.session_state.placeholder_feedback.container():
                     display_radio_buttons_collect_responses(current_question, q, round_num)
             else:
                 # If the button has not been clicked yet, prompt the user to generate outputs
                 if st.session_state[f"show_output1_{round_num}_{q_index}"] and st.session_state[f"show_output2_{round_num}_{q_index}"]:
-                    st.info("After reading both ouptuts, please click the 'Click to see the questions' button to proceed.")
+                    st.info("After reading both outputs, please click the 'Click to see the questions' button to proceed.")
 
 def survey_started_callback():
     st.session_state.survey_started = True

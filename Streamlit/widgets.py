@@ -78,44 +78,49 @@ def submit_button_callback():
 def display_radio_buttons_collect_responses(current_question, q, round_num):
     st.write("Please provide your responses below:")
 
-    current_question.response_preference = st.radio(
+    response_preference = st.radio(
         f"Round {round_num} Question {q + 1} Preference",
         options=['1', '2'],
         index=None,
         key=f'response_preference_{round_num}_{q + 1}'
     )
+    current_question.response_preference = response_preference
 
     # Relevance Likert Scale (Horizontal layout)
     st.write("Relevance (1=Greater relevance in first response, 5=Greater relevance in second response)")
-    current_question.radio_buttons[q].relevance_preference = st.radio(
+    relevance_preference = st.radio(
         "Relevance Radio Button",
         options=[1, 2, 3, 4, 5],
         index=None, # No pre-filled selection
         horizontal=True, # Horizontal layout
         key=f'relevance_preference_{round_num}_{q + 1}',
-        label_visibility="collapsed"
+        label_visibility="collapsed" # label not visible or taking up space
     )
+    current_question.radio_buttons[q].relevance_preference = relevance_preference
 
     # Validity Likert Scale (Horizontal layout)
     st.write("Validity (1=Greater validity in first response, 5=Greater validity in second response)")
-    current_question.radio_buttons[q].validity_preference = st.radio(
+    validity_preference = st.radio(
         "Validity Radio Button",
         options=[1, 2, 3, 4, 5],
         index=None, # No pre-filled selection
         horizontal=True, # Horizontal layout
         key=f'validity_preference_{round_num}_{q + 1}',
-        label_visibility="collapsed"
+        label_visibility="collapsed" # label not visible or taking up space
     )
+    current_question.radio_buttons[q].validity_preference = validity_preference
 
     # Explainability Likert Scale (Horizontal layout)
     st.write("Explainability (1=Greater explainability in first response, 5=Greater explainability in second response)")
-    current_question.radio_buttons[q].explainability_preference = st.radio(
+    explainability_preference = st.radio(
         "Explainability Radio Button",
         options=[1, 2, 3, 4, 5],
         index=None, # No pre-filled selection
         horizontal=True, # Horizontal layout
         key=f'explainability_preference_{round_num}_{q + 1}',
-        label_visibility="collapsed"
+        label_visibility="collapsed" # label not visible or taking up space
     )
+    current_question.radio_buttons[q].explainability_preference = explainability_preference
+
     st.button("Submit Response", key=f'submit_{round_num}_{q + 1}', on_click=submit_button_callback)
 
