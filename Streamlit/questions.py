@@ -17,16 +17,16 @@ def submit_to_google_form(data):
         'entry.1271752541': data['validity_preference'],
         'entry.1875781565': data['explainability_preference'],
     }
- #   try:
- #       response = requests.post(form_url, data=form_data)
- #       if response.status_code == 200:
- #           st.success("Response submitted successfully!")
- #       else:
- #           st.error(f"Error submitting response. Status code: {response.status_code}")
- #           save_response_locally(data)
- #   except Exception as e:
- #       st.error(f"Error submitting response: {e}")
- #       save_response_locally(data)
+    try:
+        response = requests.post(form_url, data=form_data)
+        if response.status_code == 200:
+            st.success("Response submitted successfully!")
+        else:
+            st.error(f"Error submitting response. Status code: {response.status_code}")
+            save_response_locally(data)
+    except Exception as e:
+        st.error(f"Error submitting response: {e}")
+        save_response_locally(data)
 
 def save_response_locally(data):
     filename = 'responses.csv'
