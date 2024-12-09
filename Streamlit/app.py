@@ -53,14 +53,14 @@ def survey_started_callback():
 
 def intro_statement():
     st.header('CS 197 Project :computer:')
-    st.subheader(':green[Introduction]')
+    st.subheader('Introduction')
     st.write(
         "This study explores whether user perception of AI responses changes when responses include language suggesting that the AI 'thought' about the answer. Please read both AI responses and answer the questions accordingly. :sunglasses::sunglasses:")
 
     if not st.session_state['survey_started']:
         st.button('Ready to start?', on_click=survey_started_callback)
     else:
-        st.subheader(":red[Welcome to the Research Study]")
+        st.subheader("Welcome to the Research Study")
         st.write(f"You will be presented with {NUM_ROUNDS} rounds of questions.")
         st.write("Each round will show you 2 different questions with corresponding answers.")
 
