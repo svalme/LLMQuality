@@ -6,7 +6,6 @@ import random
 from pick_ui import display_question, display_button
 from questions import questions, answers, QuestionsAndAnswers
 from widgets import display_radio_buttons_collect_responses
-from config import theme_selection, themes, initialize_theme
 
 # Constants
 NUM_ROUNDS = 3
@@ -58,8 +57,6 @@ def intro_statement():
     st.write(
         "This study explores whether user perception of AI responses changes when responses include language suggesting that the AI 'thought' about the answer. Please read both AI responses and answer the questions accordingly. :sunglasses::sunglasses:")
 
-    theme_selection()
-
     if not st.session_state['survey_started']:
         st.button('Ready to start?', on_click=survey_started_callback)
     else:
@@ -75,15 +72,6 @@ def intro_statement():
 
 def main():
     st.set_page_config(page_title="O1 Study", page_icon="🎨")
-
-    # Initialize session states
-    if "themes" not in st.session_state:
-        st.session_state.themes = themes
-
-    if "current_theme" not in st.session_state:
-        st.session_state.current_theme = st.session_state.themes["current_theme"]
-
-    initialize_theme()
 
     # Initialize the questions_and_answers list before using it
     if 'questions_and_answers' not in st.session_state:
