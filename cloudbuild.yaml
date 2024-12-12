@@ -1,0 +1,11 @@
+steps:
+  # Step 1: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-west2-docker.pkg.dev/llm-quality-streamlit/llmqualitystreamlit/llmqstreamlit-app:latest', '.']
+  
+  # Step 2: Push Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-west2-docker.pkg.dev/llm-quality-streamlit/llmqualitystreamlit/llmqstreamlit-app:latest']
+
+images:
+  - 'us-west2-docker.pkg.dev/llm-quality-streamlit/llmqualitystreamlit/llmqstreamlit-app:latest'
